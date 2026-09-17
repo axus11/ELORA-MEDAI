@@ -5772,15 +5772,90 @@ def patient_login():
 # =========================================================
 # CREATE FIRST DOCTOR
 # =========================================================
-
 @app.route("/create-doctor")
 def create_doctor():
 
+    email = "doctor@elora.med"
+    password = "ELORA2026!"
+
     existing_doctor = Doctor.query.filter_by(
-        email="doctor@elora.med"
+        email=email
     ).first()
 
-    if existing_doctor:
+    try:
+
+        # -------------------------------------------------
+        # RESET EXISTING DOCTOR
+        # -------------------------------------------------
+
+        if existing_doctor:
+
+            existing_doctor.name = "ELORA Doctor"
+
+            existing_doctor.password_hash = (
+                generate_password_hash(password)
+            )
+
+            existing_doctor.role = "doctor"
+
+            db.session.commit()
+
+            return """
+            <!DOCTYPE html>
+
+            <html>
+
+            <head>
+
+                <title>ELORA MEDAI</title>
+
+            </head>
+
+            <body>
+
+                <h2>
+                    Doctor account password reset successfully.
+                </h2>
+
+                <p>
+                    Email: doctor@elora.med
+                </p>
+
+                <p>
+                    Password: ELORA2026!
+                </p>
+
+                <p>
+                    <a href="/login">
+                        Go to Login
+                    </a>
+                </p>
+
+            </body>
+
+            </html>
+            """
+
+        # -------------------------------------------------
+        # CREATE NEW DOCTOR
+        # -------------------------------------------------
+
+        doctor = Doctor(
+
+            name="ELORA Doctor",
+
+            email=email,
+
+            password_hash=
+                generate_password_hash(password),
+
+            role="doctor"
+
+        )
+
+        db.session.add(doctor)
+
+        db.session.commit()
 
         return """
         <!DOCTYPE html>
@@ -5789,24 +5864,28 @@ def create_doctor():
 
         <head>
 
-            <title>
-                ELORA MEDAI
-            </title>
+            <title>ELORA MEDAI</title>
 
         </head>
 
         <body>
 
             <h2>
-                Doctor account already exists.
+                Doctor account created successfully.
             </h2>
 
             <p>
+                Email: doctor@elora.med
+            </p>
 
-                <a href="/">
+            <p>
+                Password: ELORA2026!
+            </p>
+
+            <p>
+                <a href="/login">
                     Go to Login
                 </a>
-
             </p>
 
         </body>
@@ -5814,83 +5893,20 @@ def create_doctor():
         </html>
         """
 
-    doctor = Doctor(
-
-        name="ELORA Doctor",
-
-        email="doctor@elora.med",
-
-        password_hash=generate_password_hash(
-            "123456"
-        ),
-
-        role="doctor"
-
-    )
-
-    try:
-
-        db.session.add(
-            doctor
-        )
-
-        db.session.commit()
-
     except Exception as error:
 
         db.session.rollback()
 
         print(
-            "CREATE DOCTOR ERROR:",
+            "CREATE/RESET DOCTOR ERROR:",
             error
         )
 
         return """
         <h2>
-            Unable to create doctor account.
+            Unable to create or reset doctor account.
         </h2>
-        """
-
-    return """
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-        <title>
-            ELORA MEDAI
-        </title>
-
-    </head>
-
-    <body>
-
-        <h2>
-            Doctor account created successfully.
-        </h2>
-
-        <p>
-            Email: doctor@elora.med
-        </p>
-
-        <p>
-            Password: 123456
-        </p>
-
-        <p>
-
-            <a href="/">
-                Go to Login
-            </a>
-
-        </p>
-
-    </body>
-
-    </html>
-    """
-
+        """, 500
 # =========================================================
 # SETTINGS PAGE
 # =========================================================
