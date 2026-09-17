@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        ELORA MEDAI | {{ patient.first_name }} {{ patient.last_name }}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/patient-profile.css') }}"
+    >
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="profile-page">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark">
+                E
+            </div>
+
+            <div>
+                <strong>ELORA</strong>
+                <span>MEDAI</span>
+            </div>
+
+        </div>
+
+        <div class="system-status">
+            <span class="online-dot"></span>
+            SYSTEM ONLINE
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('dashboard') }}" class="nav-item">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('patients') }}" class="nav-item active">
+                <span>♙</span>
+                Patients
+            </a>
+
+            <a href="{{ url_for('clinical_cases') }}" class="nav-item">
+                <span>◈</span>
+                Clinical Cases
+            </a>
+
+            <a href="{{ url_for('evidence') }}" class="nav-item">
+                <span>⌁</span>
+                Evidence
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a href="{{ url_for('settings') }}" class="nav-item">
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="doctor-mini">
+
+                <div class="avatar">
+                    {{ doctor_initials or "DR" }}
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name or "Doctor" }}
+                    </strong>
+
+                    <span>
+                        Medical Staff
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="profile-main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    PATIENT RECORD
+                </span>
+
+                <h1>
+                    Patient Profile
+                </h1>
+
+                <p>
+                    Complete clinical record and case history.
+                </p>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <a
+                    href="{{ url_for('patients') }}"
+                    class="back-button"
+                >
+                    ← Back to Patients
+                </a>
+
+                <div class="profile">
+
+                    <div class="avatar">
+                        {{ doctor_initials or "DR" }}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ doctor_name or "Doctor" }}
+                        </strong>
+
+                        <small>
+                            Clinical Staff
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PATIENT HERO -->
+
+        <section class="patient-hero">
+
+            <div class="patient-identity">
+
+                <div class="large-avatar">
+
+                    {{ patient.first_name[0].upper() }}{{ patient.last_name[0].upper() }}
+
+                </div>
+
+                <div>
+
+                    <span class="eyebrow">
+                        PATIENT
+                    </span>
+
+                    <h2>
+                        {{ patient.first_name }}
+                        {{ patient.last_name }}
+                    </h2>
+
+                    <div class="patient-meta">
+
+                        <span>
+                            ID: {{ patient.patient_id }}
+                        </span>
+
+                        <span>
+                            •
+                        </span>
+
+                        <span class="active-status">
+                            ● ACTIVE
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+<div class="hero-actions">
+
+    <a
+        href="{{ url_for('patient_chat', patient_id=patient.id) }}"
+        class="outline-button"
+    >
+        💬 Chat with Patient
+    </a>
+{% if patient.patient_account_active %}
+
+    <div class="portal-status enabled">
+        <span>●</span>
+        PATIENT PORTAL ENABLED
+    </div>
+
+    <a
+        href="{{ url_for('patient_chat', patient_id=patient.id) }}"
+        class="primary-button"
+    >
+        💬 Open Patient Chat
+    </a>
+
+{% else %}
+
+    <form
+        method="POST"
+        action="{{ url_for('enable_patient_portal', patient_id=patient.id) }}"
+    >
+
+        <button
+            type="submit"
+            class="primary-button portal-enable-button"
+        >
+            🔓 Enable Patient Portal
+        </button>
+
+    </form>
+
+{% endif %}
+    <button
+        type="button"
+        class="primary-button"
+        onclick="window.location.href='{{ url_for('clinical_cases') }}'"
+    >
+        + New Clinical Case
+    </button>
+
+</div>
+
+        </section>
+
+
+        <!-- PATIENT INFORMATION -->
+
+        <section class="content-grid">
+
+            <div class="card">
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            DEMOGRAPHICS
+                        </span>
+
+                        <h3>
+                            Patient Information
+                        </h3>
+
+                    </div>
+
+                    <span class="secure-badge">
+                        SECURE
+                    </span>
+
+                </div>
+
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <span>
+                            FULL NAME
+                        </span>
+
+                        <strong>
+                            {{ patient.first_name }}
+                            {{ patient.last_name }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            PATIENT ID
+                        </span>
+
+                        <strong>
+                            {{ patient.patient_id }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            DATE OF BIRTH
+                        </span>
+
+                        <strong>
+                            {{ patient.date_of_birth }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            GENDER
+                        </span>
+
+                        <strong>
+                            {{ patient.gender or "Not specified" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            EMAIL
+                        </span>
+
+                        <strong>
+                            {{ patient.email or "Not provided" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            PHONE
+                        </span>
+
+                        <strong>
+                            {{ patient.phone or "Not provided" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            REGISTERED
+                        </span>
+
+                        <strong>
+                            {{ patient.created_at.strftime("%b %d, %Y") }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            TOTAL CASES
+                        </span>
+
+                        <strong>
+                            {{ cases|length }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CASE SUMMARY -->
+
+            <div class="card summary-card">
+
+                <span class="eyebrow">
+                    CLINICAL ACTIVITY
+                </span>
+
+                <h3>
+                    Case Summary
+                </h3>
+
+                <div class="summary-number">
+                    {{ cases|length }}
+                </div>
+
+                <p>
+                    Clinical cases associated with this patient.
+                </p>
+
+                <a
+                    href="{{ url_for('clinical_cases') }}"
+                    class="outline-button"
+                >
+                    Open Clinical Cases →
+                </a>
+
+            </div>
+
+        </section>
+        <!-- =====================================================
+             PATIENT HEALTH TRAJECTORY
+        ====================================================== -->
+
+        <section class="health-chart-card">
+
+            <div class="health-chart-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        CLINICAL INTELLIGENCE
+                    </span>
+
+                    <h3>
+                        Patient Health Trajectory
+                    </h3>
+
+                    <p>
+                        Clinical severity trend across recorded cases.
+                    </p>
+
+                </div>
+
+                <div class="health-chart-summary">
+
+                    <span class="health-score-label">
+                        CURRENT TREND
+                    </span>
+
+                    <strong id="healthScore">
+                        --
+                    </strong>
+
+                    <span
+                        id="healthTrendChange"
+                        class="health-trend-change"
+                    >
+                        --
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHART -->
+
+            <div class="health-chart-wrapper">
+
+                <div class="health-chart-y-axis">
+
+                    <span>100</span>
+                    <span>75</span>
+                    <span>50</span>
+                    <span>25</span>
+                    <span>0</span>
+
+                </div>
+
+                <div class="health-chart-area">
+
+                    <canvas
+                        id="patientHealthChart"
+                    ></canvas>
+
+                    <div
+                        id="healthChartEmpty"
+                        class="health-chart-empty"
+                    >
+                        <span>◈</span>
+
+                        <strong>
+                            Not enough clinical data
+                        </strong>
+
+                        <small>
+                            Create additional clinical cases
+                            to build the patient's trajectory.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHART FOOTER -->
+
+            <div class="health-chart-footer">
+
+                <div class="health-chart-legend">
+
+                    <span class="legend-dot"></span>
+
+                    <span>
+                        Clinical Severity Trend
+                    </span>
+
+                </div>
+
+                <div class="health-chart-range">
+
+                    <button
+                        type="button"
+                        class="chart-range active"
+                        data-range="all"
+                    >
+                        ALL
+                    </button>
+
+                    <button
+                        type="button"
+                        class="chart-range"
+                        data-range="6"
+                    >
+                        6M
+                    </button>
+
+                    <button
+                        type="button"
+                        class="chart-range"
+                        data-range="3"
+                    >
+                        3M
+                    </button>
+
+                    <button
+                        type="button"
+                        class="chart-range"
+                        data-range="1"
+                    >
+                        1M
+                    </button>
+
+                    <button
+                        type="button"
+                        class="chart-range"
+                        data-range="7"
+                    >
+                        1W
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- CASE HISTORY -->
+
+        <section class="cases-card">
+
+            <div class="card-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+                        CLINICAL HISTORY
+                    </span>
+
+                    <h3>
+                        Patient Cases
+                    </h3>
+
+                </div>
+
+                <span class="case-total">
+                    {{ cases|length }} CASES
+                </span>
+
+            </div>
+
+
+            {% if cases %}
+
+            <div class="case-list">
+
+                {% for case in cases %}
+
+                <article class="case-item">
+
+                    <div class="case-icon">
+                        ◈
+                    </div>
+
+                    <div class="case-main">
+
+                        <div class="case-top">
+
+                            <strong>
+                                {{ case.chief_complaint or "Clinical Case" }}
+                            </strong>
+
+                            <span class="case-status {{ case.status|lower }}">
+                                {{ case.status }}
+                            </span>
+
+                        </div>
+
+                        <span class="case-id">
+                            {{ case.case_id }}
+                        </span>
+
+                        <p>
+
+                            {% if case.symptoms %}
+                                {{ case.symptoms }}
+                            {% else %}
+                                No symptoms recorded.
+                            {% endif %}
+
+                        </p>
+
+                        <div class="case-meta">
+
+                            <span>
+                                Created
+                                {{ case.created_at.strftime("%b %d, %Y") }}
+                            </span>
+
+                            {% if case.severity %}
+                            <span>
+                                Severity: {{ case.severity }}
+                            </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="{{ url_for('view_case', case_id=case.id) }}"
+                        class="view-case-button"
+                    >
+                        View Case →
+                    </a>
+
+                </article>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-cases">
+
+                <div class="empty-icon">
+                    ◈
+                </div>
+
+                <h3>
+                    No clinical cases yet
+                </h3>
+
+                <p>
+                    This patient does not have any clinical cases
+                    recorded in ELORA MEDAI.
+                </p>
+
+                <a
+                    href="{{ url_for('clinical_cases') }}"
+                    class="primary-button"
+                >
+                    + Create Clinical Case
+                </a>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+<!-- =====================================================
+     PATIENT CHAT
+===================================================== -->
+
+<section class="chat-card">
+
+    <div class="chat-header">
+
+        <div>
+            <span class="eyebrow">
+                SECURE COMMUNICATION
+            </span>
+
+            <h3>
+                Patient Messages
+            </h3>
+
+            <p>
+                Secure communication with
+                {{ patient.first_name }} {{ patient.last_name }}.
+            </p>
+        </div>
+
+        <span class="chat-status">
+            ● SECURE
+        </span>
+
+    </div>
+
+
+    <!-- MESSAGE AREA -->
+
+    <div
+        id="chatMessages"
+        class="chat-messages"
+    >
+
+        <div class="chat-empty">
+
+            <div class="chat-empty-icon">
+                ◌
+            </div>
+
+            <strong>
+                No messages yet
+            </strong>
+
+            <span>
+                Start a secure conversation with
+                {{ patient.first_name }}.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MESSAGE INPUT -->
+
+    <form
+        id="chatForm"
+        class="chat-input-area"
+    >
+
+        <textarea
+            id="chatInput"
+            placeholder="Write a secure message..."
+            rows="1"
+            maxlength="2000"
+        ></textarea>
+
+        <button
+            type="submit"
+            class="chat-send-button"
+        >
+            <span>➤</span>
+            Send
+        </button>
+
+    </form>
+
+</section>
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <span>
+                ELORA MEDAI v0.1
+            </span>
+
+            <span>
+                Clinical decision-support prototype ·
+                Always verify AI-generated information
+            </span>
+
+        </footer>
+
+    </main>
+<script>
+
+const patientId = {{ patient.id }};
+
+const chatMessages =
+    document.getElementById("chatMessages");
+
+const chatForm =
+    document.getElementById("chatForm");
+
+const chatInput =
+    document.getElementById("chatInput");
+
+
+// =====================================================
+// LOAD CHAT
+// =====================================================
+
+async function loadChat() {
+
+    try {
+
+        const response = await fetch(
+            `/api/chat/${patientId}`
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            console.error(
+                data.error
+            );
+
+            return;
+        }
+
+        renderMessages(
+            data.messages
+        );
+
+    } catch (error) {
+
+        console.error(
+            "CHAT LOAD ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// RENDER MESSAGES
+// =====================================================
+
+function renderMessages(messages) {
+
+    if (!messages || messages.length === 0) {
+
+        chatMessages.innerHTML = `
+
+            <div class="chat-empty">
+
+                <div class="chat-empty-icon">
+                    ◌
+                </div>
+
+                <strong>
+                    No messages yet
+                </strong>
+
+                <span>
+                    Start a secure conversation
+                    with the patient.
+                </span>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    chatMessages.innerHTML = "";
+
+
+    messages.forEach(message => {
+
+        const bubble =
+            document.createElement("div");
+
+
+        bubble.className =
+            message.sender_type === "doctor"
+                ? "chat-message doctor-message"
+                : "chat-message patient-message";
+
+
+        const time =
+            new Date(
+                message.created_at
+            ).toLocaleString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+
+        bubble.innerHTML = `
+
+            <div class="message-bubble">
+
+                <div class="message-text">
+                    ${escapeHtml(
+                        message.message
+                    )}
+                </div>
+
+                <div class="message-time">
+                    ${time}
+                </div>
+
+            </div>
+
+        `;
+
+
+        chatMessages.appendChild(
+            bubble
+        );
+
+    });
+
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+// =====================================================
+// SEND MESSAGE
+// =====================================================
+
+chatForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const message =
+            chatInput.value.trim();
+
+
+        if (!message) {
+            return;
+        }
+
+
+        chatInput.disabled = true;
+
+
+        try {
+
+            const response = await fetch(
+                `/api/chat/${patientId}`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+
+                }
+            );
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                alert(
+                    data.error ||
+                    "Unable to send message."
+                );
+
+                return;
+            }
+
+
+            chatInput.value = "";
+
+
+            await loadChat();
+
+
+        } catch (error) {
+
+            console.error(
+                "SEND MESSAGE ERROR:",
+                error
+            );
+
+            alert(
+                "Unable to send message."
+            );
+
+        } finally {
+
+            chatInput.disabled = false;
+
+            chatInput.focus();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// ENTER TO SEND
+// =====================================================
+
+chatInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            chatForm.requestSubmit();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value;
+
+    return div.innerHTML;
+
+}
+
+
+// =====================================================
+// INITIAL LOAD
+// =====================================================
+
+loadChat();
+
+
+// Refresh messages periodically
+
+setInterval(
+    loadChat,
+    5000
+);
+(function () {
+
+    const theme =
+        localStorage.getItem("elora_theme") || "dark";
+
+    document.documentElement.classList.add(
+        "theme-" + theme
+    );
+
+})();
+// =====================================================
+// PATIENT HEALTH TRAJECTORY
+// =====================================================
+
+const healthTrend =
+    {{ health_trend | tojson }};
+
+const healthCanvas =
+    document.getElementById(
+        "patientHealthChart"
+    );
+
+const healthEmpty =
+    document.getElementById(
+        "healthChartEmpty"
+    );
+
+const healthScore =
+    document.getElementById(
+        "healthScore"
+    );
+
+const healthTrendChange =
+    document.getElementById(
+        "healthTrendChange"
+    );
+
+
+let healthChart = null;
+
+
+// =====================================================
+// BUILD CHART
+// =====================================================
+
+function buildHealthChart(
+    range = "all"
+) {
+
+    if (!healthCanvas) {
+        return;
+    }
+
+
+    let data =
+        [...healthTrend];
+
+
+    // -------------------------------------------------
+    // FILTER RANGE
+    // -------------------------------------------------
+
+    if (
+        range !== "all" &&
+        data.length > 0
+    ) {
+
+        const days =
+            Number(range);
+
+        const cutoff =
+            new Date();
+
+        cutoff.setDate(
+            cutoff.getDate() - days
+        );
+
+
+        data = data.filter(
+            item => {
+
+                const date =
+                    new Date(
+                        item.date
+                    );
+
+                return date >= cutoff;
+
+            }
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // EMPTY STATE
+    // -------------------------------------------------
+
+    if (!data.length) {
+
+        healthCanvas.style.display =
+            "none";
+
+        if (healthEmpty) {
+
+            healthEmpty.style.display =
+                "flex";
+
+        }
+
+        if (healthScore) {
+
+            healthScore.textContent =
+                "--";
+
+        }
+
+        if (healthTrendChange) {
+
+            healthTrendChange.textContent =
+                "--";
+
+        }
+
+        return;
+
+    }
+
+
+    healthCanvas.style.display =
+        "block";
+
+
+    if (healthEmpty) {
+
+        healthEmpty.style.display =
+            "none";
+
+    }
+
+
+    // -------------------------------------------------
+    // CURRENT SCORE
+    // -------------------------------------------------
+
+    const current =
+        data[data.length - 1].score;
+
+
+    const previous =
+        data.length > 1
+            ? data[data.length - 2].score
+            : current;
+
+
+    const change =
+        current - previous;
+
+
+    if (healthScore) {
+
+        healthScore.textContent =
+            `${current}`;
+
+    }
+
+
+    if (healthTrendChange) {
+
+        if (change > 0) {
+
+            healthTrendChange.textContent =
+                `▲ +${change}`;
+
+        }
+        else if (change < 0) {
+
+            healthTrendChange.textContent =
+                `▼ ${change}`;
+
+        }
+        else {
+
+            healthTrendChange.textContent =
+                "● 0";
+
+        }
+
+    }
+
+
+    // -------------------------------------------------
+    // DESTROY PREVIOUS CHART
+    // -------------------------------------------------
+
+    if (healthChart) {
+
+        healthChart.destroy();
+
+    }
+
+
+    // -------------------------------------------------
+    // CREATE GRADIENT
+    // -------------------------------------------------
+
+    const ctx =
+        healthCanvas.getContext(
+            "2d"
+        );
+
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            400
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "rgba(48, 196, 255, 0.30)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(48, 196, 255, 0.00)"
+    );
+
+
+    // -------------------------------------------------
+    // CREATE CHART
+    // -------------------------------------------------
+
+    healthChart =
+        new Chart(
+            ctx,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels:
+                        data.map(
+                            item =>
+                                item.date
+                        ),
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Health Trend",
+
+                            data:
+                                data.map(
+                                    item =>
+                                        item.score
+                                ),
+
+                            borderWidth: 2.5,
+
+                            borderColor:
+                                "#30c4ff",
+
+                            backgroundColor:
+                                gradient,
+
+                            fill: true,
+
+                            tension: 0.38,
+
+                            pointRadius: 4,
+
+                            pointHoverRadius: 7,
+
+                            pointBackgroundColor:
+                                "#02070d",
+
+                            pointBorderColor:
+                                "#30c4ff",
+
+                            pointBorderWidth: 2,
+
+                        }
+
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    interaction: {
+
+                        intersect: false,
+
+                        mode: "index"
+
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+
+                            display: false
+
+                        },
+
+
+                        tooltip: {
+
+                            backgroundColor:
+                                "rgba(2, 7, 13, 0.96)",
+
+                            borderColor:
+                                "rgba(48, 196, 255, 0.35)",
+
+                            borderWidth: 1,
+
+                            padding: 12,
+
+                            displayColors:
+                                false,
+
+
+                            callbacks: {
+
+                                title:
+                                    function(
+                                        items
+                                    ) {
+
+                                        return items[0]
+                                            .label;
+
+                                    },
+
+
+                                label:
+                                    function(
+                                        context
+                                    ) {
+
+                                        const item =
+                                            data[
+                                                context.dataIndex
+                                            ];
+
+                                        return [
+                                            `Trend: ${item.score}`,
+                                            `Severity: ${item.severity}`,
+                                            `Status: ${item.status}`,
+                                            `Case: ${item.case_id}`
+                                        ];
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            grid: {
+
+                                display: false
+
+                            },
+
+                            ticks: {
+
+                                color:
+                                    "rgba(150, 180, 200, 0.65)",
+
+                                maxRotation: 0
+
+                            }
+
+                        },
+
+
+                        y: {
+
+                            min: 0,
+
+                            max: 100,
+
+                            ticks: {
+
+                                stepSize: 25,
+
+                                color:
+                                    "rgba(150, 180, 200, 0.65)"
+
+                            },
+
+                            grid: {
+
+                                color:
+                                    "rgba(255, 255, 255, 0.05)"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+}
+
+
+// =====================================================
+// RANGE BUTTONS
+// =====================================================
+
+document
+    .querySelectorAll(
+        ".chart-range"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    document
+                        .querySelectorAll(
+                            ".chart-range"
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.remove(
+                                    "active"
+                                )
+                        );
+
+
+                    this.classList.add(
+                        "active"
+                    );
+
+
+                    buildHealthChart(
+                        this.dataset.range
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+// =====================================================
+// INITIALIZE
+// =====================================================
+
+buildHealthChart("all");
+</script>
+
+</body>
+</html>

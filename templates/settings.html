@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Settings</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/setting.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="settings-shell">
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+
+    <aside class="settings-sidebar">
+
+        <div class="brand">
+
+            <div class="brand-mark">
+                E
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    ELORA
+                </div>
+
+                <div class="brand-subtitle">
+                    MEDAI
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="settings-nav">
+
+            <a href="{{ url_for('dashboard') }}">
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('patients') }}">
+                <span>♙</span>
+                Patients
+            </a>
+
+            <a href="{{ url_for('clinical_cases') }}">
+                <span>◈</span>
+                Clinical Cases
+            </a>
+
+            <a href="{{ url_for('evidence') }}">
+                <span>◉</span>
+                Evidence
+            </a>
+
+            <a
+                href="{{ url_for('settings') }}"
+                class="active"
+            >
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                <div>
+
+                    <strong>
+                        SYSTEM ONLINE
+                    </strong>
+
+                    <small>
+                        ELORA CORE
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="logout-link"
+            >
+                ⇥
+                Sign Out
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main class="settings-main">
+
+        <header class="settings-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    ELORA / CONTROL CENTER
+                </div>
+
+                <h1>
+                    System Settings
+                </h1>
+
+                <p>
+                    Configure your clinical workspace,
+                    intelligence engine and account.
+                </p>
+
+            </div>
+
+
+            <div class="doctor-chip">
+
+                <div class="avatar">
+                    {{ doctor_initials }}
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name }}
+                    </strong>
+
+                    <span>
+                        {{ doctor_email }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ================================================= -->
+        <!-- SETTINGS NAV -->
+        <!-- ================================================= -->
+
+        <div class="settings-tabs">
+
+            <button
+                class="tab-button active"
+                data-section="profile"
+            >
+                Profile
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="security"
+            >
+                Security
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="notifications"
+            >
+                Notifications
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="appearance"
+            >
+                Appearance
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="ai"
+            >
+                AI Preferences
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="clinical"
+            >
+                Clinical
+            </button>
+
+            <button
+                class="tab-button"
+                data-section="account"
+            >
+                Account
+            </button>
+
+        </div>
+
+
+        <div
+            id="settings-message"
+            class="settings-message"
+        ></div>
+
+
+        <!-- ================================================= -->
+        <!-- PROFILE -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section active"
+            id="section-profile"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    ◉
+                </div>
+
+                <div>
+
+                    <h2>
+                        Professional Profile
+                    </h2>
+
+                    <p>
+                        Manage your ELORA MEDAI identity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="profile-hero">
+
+                    <div class="large-avatar">
+                        {{ doctor_initials }}
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            {{ doctor_name }}
+                        </h3>
+
+                        <span>
+                            {{ doctor.role|capitalize }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <form id="profile-form">
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label>
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profile-name"
+                                value="{{ doctor.name }}"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="profile-email"
+                                value="{{ doctor.email }}"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Role
+                        </label>
+
+                        <input
+                            type="text"
+                            value="{{ doctor.role|capitalize }}"
+                            disabled
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Save Profile
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- SECURITY -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-security"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    ◆
+                </div>
+
+                <div>
+
+                    <h2>
+                        Security
+                    </h2>
+
+                    <p>
+                        Protect your clinical workspace.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <form id="password-form">
+
+                    <div class="field">
+
+                        <label>
+                            Current Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="current-password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="field">
+
+                            <label>
+                                New Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="new-password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Confirm Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="security-note">
+
+                        <span>
+                            ⚠
+                        </span>
+
+                        <p>
+                            Use a strong password containing
+                            at least 6 characters.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+                        Change Password
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- NOTIFICATIONS -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-notifications"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    ◌
+                </div>
+
+                <div>
+
+                    <h2>
+                        Notifications
+                    </h2>
+
+                    <p>
+                        Decide which system events reach you.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Email Notifications
+                        </strong>
+
+                        <p>
+                            Receive important ELORA notifications
+                            through email.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="email_notifications"
+                            {% if settings.email_notifications %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Clinical Case Alerts
+                        </strong>
+
+                        <p>
+                            Notify when clinical cases require
+                            attention.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="case_notifications"
+                            {% if settings.case_notifications %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Evidence Updates
+                        </strong>
+
+                        <p>
+                            Receive notifications related to
+                            evidence and literature.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="evidence_notifications"
+                            {% if settings.evidence_notifications %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Security Alerts
+                        </strong>
+
+                        <p>
+                            Receive important account security
+                            notifications.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="security_notifications"
+                            {% if settings.security_notifications %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- APPEARANCE -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-appearance"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    ◐
+                </div>
+
+                <div>
+
+                    <h2>
+                        Appearance
+                    </h2>
+
+                    <p>
+                        Customize the ELORA interface.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="theme-grid">
+
+                    <button
+                        class="theme-card {% if settings.theme == 'dark' %}selected{% endif %}"
+                        data-theme="dark"
+                    >
+
+                        <div class="theme-preview dark-preview">
+
+                            <div></div>
+                            <div></div>
+                            <div></div>
+
+                        </div>
+
+                        <strong>
+                            Dark
+                        </strong>
+
+                        <span>
+                            Recommended
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        class="theme-card {% if settings.theme == 'light' %}selected{% endif %}"
+                        data-theme="light"
+                    >
+
+                        <div class="theme-preview light-preview">
+
+                            <div></div>
+                            <div></div>
+                            <div></div>
+
+                        </div>
+
+                        <strong>
+                            Light
+                        </strong>
+
+                        <span>
+                            Bright workspace
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        class="theme-card {% if settings.theme == 'system' %}selected{% endif %}"
+                        data-theme="system"
+                    >
+
+                        <div class="theme-preview system-preview">
+
+                            <div></div>
+                            <div></div>
+                            <div></div>
+
+                        </div>
+
+                        <strong>
+                            System
+                        </strong>
+
+                        <span>
+                            Follow device
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+
+                        <strong>
+                            Compact Mode
+                        </strong>
+
+                        <p>
+                            Reduce spacing throughout the
+                            clinical workspace.
+                        </p>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="compact_mode"
+                            {% if settings.compact_mode %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+
+                        <strong>
+                            Interface Animations
+                        </strong>
+
+                        <p>
+                            Enable futuristic ELORA interface
+                            animations and transitions.
+                        </p>
+
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="animations"
+                            {% if settings.animations %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- AI -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-ai"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon ai-icon">
+                    AI
+                </div>
+
+                <div>
+
+                    <h2>
+                        ELORA AI Preferences
+                    </h2>
+
+                    <p>
+                        Configure how the clinical intelligence
+                        engine assists you.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-banner">
+
+                <div class="ai-orb">
+                    E
+                </div>
+
+                <div>
+
+                    <strong>
+                        ELORA AI CORE
+                    </strong>
+
+                    <span>
+                        Clinical Intelligence Engine
+                    </span>
+
+                </div>
+
+                <div class="online-badge">
+                    ONLINE
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            AI Clinical Assistance
+                        </strong>
+
+                        <p>
+                            Enable ELORA's clinical decision-support
+                            features.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="ai_assistance"
+                            {% if settings.ai_assistance %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Evidence Integration
+                        </strong>
+
+                        <p>
+                            Allow clinical analysis to reference
+                            saved evidence.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="ai_evidence"
+                            {% if settings.ai_evidence %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Risk Alerts
+                        </strong>
+
+                        <p>
+                            Highlight potentially important
+                            clinical red flags.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="ai_risk_alerts"
+                            {% if settings.ai_risk_alerts %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Explain AI Findings
+                        </strong>
+
+                        <p>
+                            Show explanations behind automated
+                            clinical findings.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="ai_explanations"
+                            {% if settings.ai_explanations %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Analysis Detail Level
+                    </label>
+
+                    <select
+                        data-setting="ai_confidence"
+                    >
+
+                        <option
+                            value="conservative"
+                            {% if settings.ai_confidence == "conservative" %}selected{% endif %}
+                        >
+                            Conservative
+                        </option>
+
+                        <option
+                            value="balanced"
+                            {% if settings.ai_confidence == "balanced" %}selected{% endif %}
+                        >
+                            Balanced
+                        </option>
+
+                       <option
+    value="detailed"
+    {% if settings.ai_confidence == "detailed" %}selected{% endif %}
+>
+    Detailed
+</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- CLINICAL -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-clinical"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    +
+                </div>
+
+                <div>
+
+                    <h2>
+                        Clinical Preferences
+                    </h2>
+
+                    <p>
+                        Configure your clinical workflow.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="field">
+
+                    <label>
+                        Default Case Status
+                    </label>
+
+                    <select
+                        data-setting="default_case_status"
+                    >
+
+                        <option
+                            value="New"
+                            {% if settings.default_case_status == "New" %}selected{% endif %}
+                        >
+                            New
+                        </option>
+
+                        <option
+                            value="Active"
+                            {% if settings.default_case_status == "Active" %}selected{% endif %}
+                        >
+                            Active
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Auto Save
+                        </strong>
+
+                        <p>
+                            Automatically preserve clinical
+                            workspace changes.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="auto_save"
+                            {% if settings.auto_save %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Confirm Deletions
+                        </strong>
+
+                        <p>
+                            Ask for confirmation before deleting
+                            clinical records.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="confirm_deletions"
+                            {% if settings.confirm_deletions %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Metric Units
+                        </strong>
+
+                        <p>
+                            Display measurements using metric
+                            clinical units.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="metric_units"
+                            {% if settings.metric_units %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+
+                <div class="setting-row">
+
+                    <div>
+                        <strong>
+                            Display Patient IDs
+                        </strong>
+
+                        <p>
+                            Show ELORA patient identifiers throughout
+                            the workspace.
+                        </p>
+                    </div>
+
+                    <label class="switch">
+
+                        <input
+                            type="checkbox"
+                            data-setting="show_patient_id"
+                            {% if settings.show_patient_id %}checked{% endif %}
+                        >
+
+                        <span></span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================= -->
+        <!-- ACCOUNT -->
+        <!-- ================================================= -->
+
+        <section
+            class="settings-section"
+            id="section-account"
+        >
+
+            <div class="section-heading">
+
+                <div class="section-icon">
+                    ◈
+                </div>
+
+                <div>
+
+                    <h2>
+                        Account
+                    </h2>
+
+                    <p>
+                        Account information and system access.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="settings-card">
+
+                <div class="account-row">
+
+                    <span>
+                        Account ID
+                    </span>
+
+                    <strong>
+                        EL-DR-{{ "%04d"|format(doctor.id) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        Account Role
+                    </span>
+
+                    <strong>
+                        {{ doctor.role|capitalize }}
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        Created
+                    </span>
+
+                    <strong>
+                        {{ doctor.created_at.strftime("%d %B %Y") }}
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        System
+                    </span>
+
+                    <strong class="online-text">
+                        ELORA MEDAI
+                    </strong>
+
+                </div>
+
+
+                <div class="danger-zone">
+
+                    <div>
+
+                        <strong>
+                            Sign out of ELORA MEDAI
+                        </strong>
+
+                        <p>
+                            End your current clinical session.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="{{ url_for('logout') }}"
+                        class="danger-button"
+                    >
+                        Sign Out
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer class="settings-footer">
+
+            <span>
+                ELORA MEDAI
+            </span>
+
+            <span>
+                Clinical Intelligence Platform
+            </span>
+
+            <span>
+                v0.2
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+<script>
+
+/* =====================================================
+   ELORA MEDAI SETTINGS CONTROLLER
+===================================================== */
+
+const messageBox =
+    document.getElementById("settings-message");
+
+
+/* =====================================================
+   MESSAGE SYSTEM
+===================================================== */
+
+function showMessage(
+    message,
+    type = "success"
+) {
+
+    if (!messageBox) {
+        return;
+    }
+
+    messageBox.textContent = message;
+
+    messageBox.className =
+        "settings-message " + type;
+
+    messageBox.classList.add("visible");
+
+    setTimeout(() => {
+
+        messageBox.classList.remove(
+            "visible"
+        );
+
+    }, 3500);
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+document
+    .querySelectorAll(".tab-button")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const section =
+                    button.dataset.section;
+
+                document
+                    .querySelectorAll(
+                        ".tab-button"
+                    )
+                    .forEach(item => {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+                document
+                    .querySelectorAll(
+                        ".settings-section"
+                    )
+                    .forEach(item => {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+                button.classList.add(
+                    "active"
+                );
+
+                const targetSection =
+                    document.getElementById(
+                        "section-" + section
+                    );
+
+                if (targetSection) {
+
+                    targetSection.classList.add(
+                        "active"
+                    );
+
+                }
+
+                history.replaceState(
+                    null,
+                    "",
+                    "#" + section
+                );
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   LOAD TAB FROM URL
+===================================================== */
+
+const hash =
+    window.location.hash.replace(
+        "#",
+        ""
+    );
+
+if (hash) {
+
+    const button =
+        document.querySelector(
+            `.tab-button[data-section="${hash}"]`
+        );
+
+    if (button) {
+
+        button.click();
+
+    }
+
+}
+
+
+/* =====================================================
+   PROFILE UPDATE
+===================================================== */
+
+const profileForm =
+    document.getElementById(
+        "profile-form"
+    );
+
+if (profileForm) {
+
+    profileForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const name =
+                document.getElementById(
+                    "profile-name"
+                ).value.trim();
+
+            const email =
+                document.getElementById(
+                    "profile-email"
+                ).value.trim();
+
+            if (!name) {
+
+                showMessage(
+                    "Name is required.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            if (!email) {
+
+                showMessage(
+                    "Email is required.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/settings/profile",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            credentials: "same-origin",
+
+                            body: JSON.stringify({
+
+                                name: name,
+
+                                email: email
+
+                            })
+
+                        }
+                    );
+
+                const result =
+                    await response.json();
+
+                if (!response.ok || !result.success) {
+
+                    showMessage(
+
+                        result.error ||
+                        "Unable to update profile.",
+
+                        "error"
+
+                    );
+
+                    return;
+
+                }
+
+                showMessage(
+                    result.message ||
+                    "Profile updated successfully."
+                );
+
+                /*
+                 * Refresh so the sidebar,
+                 * avatar and doctor information
+                 * immediately use the new values.
+                 */
+
+                setTimeout(() => {
+
+                    window.location.reload();
+
+                }, 900);
+
+            } catch (error) {
+
+                console.error(
+                    "PROFILE UPDATE ERROR:",
+                    error
+                );
+
+                showMessage(
+                    "Network error while updating profile.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PASSWORD UPDATE
+===================================================== */
+
+const passwordForm =
+    document.getElementById(
+        "password-form"
+    );
+
+if (passwordForm) {
+
+    passwordForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const current_password =
+                document.getElementById(
+                    "current-password"
+                ).value;
+
+            const new_password =
+                document.getElementById(
+                    "new-password"
+                ).value;
+
+            const confirm_password =
+                document.getElementById(
+                    "confirm-password"
+                ).value;
+
+
+            if (!current_password) {
+
+                showMessage(
+                    "Current password is required.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!new_password) {
+
+                showMessage(
+                    "New password is required.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (new_password.length < 6) {
+
+                showMessage(
+                    "New password must contain at least 6 characters.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (new_password !== confirm_password) {
+
+                showMessage(
+                    "New passwords do not match.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/settings/password",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            credentials: "same-origin",
+
+                            body: JSON.stringify({
+
+                                current_password:
+                                    current_password,
+
+                                new_password:
+                                    new_password,
+
+                                confirm_password:
+                                    confirm_password
+
+                            })
+
+                        }
+                    );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok || !result.success) {
+
+                    showMessage(
+
+                        result.error ||
+                        "Unable to change password.",
+
+                        "error"
+
+                    );
+
+                    return;
+
+                }
+
+
+                showMessage(
+
+                    result.message ||
+                    "Password changed successfully."
+
+                );
+
+
+                passwordForm.reset();
+
+
+            } catch (error) {
+
+                console.error(
+                    "PASSWORD UPDATE ERROR:",
+                    error
+                );
+
+                showMessage(
+                    "Unable to connect to ELORA.",
+                    "error"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   COLLECT SETTINGS
+===================================================== */
+
+function collectSettings() {
+
+    const preferences = {};
+
+
+    document
+        .querySelectorAll(
+            "[data-setting]"
+        )
+        .forEach(element => {
+
+            const key =
+                element.dataset.setting;
+
+            if (!key) {
+                return;
+            }
+
+
+            if (
+                element.type ===
+                "checkbox"
+            ) {
+
+                preferences[key] =
+                    element.checked;
+
+            } else {
+
+                preferences[key] =
+                    element.value;
+
+            }
+
+        });
+
+
+    return preferences;
+
+}
+
+
+/* =====================================================
+   SAVE SETTINGS TO FLASK
+===================================================== */
+
+async function savePreferences(
+    extra = {}
+) {
+
+    const preferences =
+        collectSettings();
+
+
+    /*
+     * Add the specific setting that triggered
+     * the save.
+     */
+
+    Object.assign(
+        preferences,
+        extra
+    );
+
+
+    console.log(
+        "ELORA SETTINGS →",
+        preferences
+    );
+
+
+    try {
+
+        /*
+         * IMPORTANT:
+         *
+         * Flask app.py uses:
+         *
+         * /api/settings
+         *
+         * NOT:
+         *
+         * /api/settings/preferences
+         */
+
+        const response =
+            await fetch(
+                "/api/settings",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+
+                    },
+
+                    credentials:
+                        "same-origin",
+
+                    body:
+                        JSON.stringify(
+                            preferences
+                        )
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            console.error(
+                "SETTINGS SAVE ERROR:",
+                result
+            );
+
+            showMessage(
+
+                result.error ||
+                "Unable to save settings.",
+
+                "error"
+
+            );
+
+            return false;
+
+        }
+
+
+        console.log(
+            "ELORA SETTINGS SAVED:",
+            result.settings
+        );
+
+
+        showMessage(
+
+            result.message ||
+            "Settings saved successfully."
+
+        );
+
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "SETTINGS CONNECTION ERROR:",
+            error
+        );
+
+
+        showMessage(
+
+            "Unable to connect to ELORA MEDAI.",
+
+            "error"
+
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   TOGGLE SETTINGS
+===================================================== */
+
+document
+    .querySelectorAll(
+        'input[data-setting]'
+    )
+    .forEach(input => {
+
+        input.addEventListener(
+            "change",
+            async () => {
+
+                await savePreferences();
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   SELECT SETTINGS
+===================================================== */
+
+document
+    .querySelectorAll(
+        'select[data-setting]'
+    )
+    .forEach(select => {
+
+        select.addEventListener(
+            "change",
+            async () => {
+
+                await savePreferences();
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   THEME SYSTEM
+===================================================== */
+
+/*
+ * Apply the selected theme to the current page.
+ */
+function applyTheme(theme) {
+
+    const body = document.body;
+
+    /*
+     * Remove all previous theme classes.
+     */
+    body.classList.remove(
+        "theme-dark",
+        "theme-light",
+        "theme-system"
+    );
+
+    /*
+     * Safety fallback.
+     */
+    if (
+        theme !== "dark" &&
+        theme !== "light" &&
+        theme !== "system"
+    ) {
+
+        theme = "dark";
+
+    }
+
+    /*
+     * Apply new theme.
+     */
+    body.classList.add(
+        "theme-" + theme
+    );
+
+    /*
+     * Store locally as an instant fallback.
+     *
+     * This means the interface can remember
+     * the theme even before Flask responds.
+     */
+    localStorage.setItem(
+        "elora_theme",
+        theme
+    );
+
+    console.log(
+        "ELORA THEME APPLIED:",
+        theme
+    );
+}
+
+
+/*
+ * Theme card click.
+ */
+document
+    .querySelectorAll(".theme-card")
+    .forEach(card => {
+
+        card.addEventListener(
+            "click",
+            async () => {
+
+                const theme =
+                    card.dataset.theme;
+
+                /*
+                 * Apply immediately.
+                 */
+                applyTheme(theme);
+
+                /*
+                 * Update selected card.
+                 */
+                document
+                    .querySelectorAll(".theme-card")
+                    .forEach(item => {
+
+                        item.classList.toggle(
+                            "selected",
+                            item.dataset.theme === theme
+                        );
+
+                    });
+
+                /*
+                 * Save to Flask/database.
+                 */
+                await savePreferences({
+                    theme: theme
+                });
+
+            }
+        );
+
+    });
+
+
+/*
+ * Apply saved local theme immediately
+ * before Flask responds.
+ */
+(function initializeLocalTheme() {
+
+    const savedTheme =
+        localStorage.getItem(
+            "elora_theme"
+        );
+
+    if (savedTheme) {
+
+        applyTheme(savedTheme);
+
+    } else {
+
+        applyTheme("dark");
+
+    }
+
+})();
+
+
+/* =====================================================
+   LOAD SETTINGS FROM FLASK
+===================================================== */
+
+async function loadSettings() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/settings",
+                {
+
+                    method: "GET",
+
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    },
+
+                    credentials:
+                        "same-origin"
+
+                }
+            );
+
+
+        if (
+            response.status === 401
+        ) {
+
+            console.warn(
+                "ELORA SETTINGS: Authentication required."
+            );
+
+            return;
+
+        }
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            console.error(
+                "LOAD SETTINGS ERROR:",
+                result
+            );
+
+            return;
+
+        }
+
+
+        const settings =
+            result.settings;
+
+
+        console.log(
+            "ELORA SETTINGS LOADED:",
+            settings
+        );
+
+
+        /*
+         * Synchronize every checkbox
+         * with the database.
+         */
+
+        document
+            .querySelectorAll(
+                'input[data-setting]'
+            )
+            .forEach(input => {
+
+                const key =
+                    input.dataset.setting;
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        settings,
+                        key
+                    )
+                ) {
+
+                    input.checked =
+                        Boolean(
+                            settings[key]
+                        );
+
+                }
+
+            });
+
+
+        /*
+         * Synchronize every select
+         * with the database.
+         */
+
+        document
+            .querySelectorAll(
+                'select[data-setting]'
+            )
+            .forEach(select => {
+
+                const key =
+                    select.dataset.setting;
+
+                if (
+                    Object.prototype.hasOwnProperty.call(
+                        settings,
+                        key
+                    )
+                ) {
+
+                    select.value =
+                        settings[key];
+
+                }
+
+            });
+
+
+        /*
+         * Synchronize theme cards.
+         */
+
+     /*
+ * Synchronize theme with Flask/database.
+ */
+
+if (settings.theme) {
+
+    /*
+     * Actually apply the theme.
+     */
+    applyTheme(
+        settings.theme
+    );
+
+
+    /*
+     * Update the selected theme card.
+     */
+    document
+        .querySelectorAll(".theme-card")
+        .forEach(card => {
+
+            card.classList.toggle(
+                "selected",
+                card.dataset.theme ===
+                settings.theme
+            );
+
+        });
+
+}
+
+    } catch (error) {
+
+        console.error(
+            "ELORA SETTINGS LOAD ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   INITIALIZE SETTINGS
+===================================================== */
+
+loadSettings();
+
+
+</script>
+
+</body>
+
+</html>

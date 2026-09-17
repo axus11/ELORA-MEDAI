@@ -1,0 +1,823 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ELORA MEDAI | Patient Chat
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/patient-chat.css') }}"
+    >
+
+</head>
+
+<body class="chat-page">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark">
+                E
+            </div>
+
+            <div>
+                <strong>ELORA</strong>
+                <span>MEDAI</span>
+            </div>
+
+        </div>
+
+        <div class="system-status">
+
+            <span class="online-dot"></span>
+
+            SYSTEM ONLINE
+
+        </div>
+
+        <nav>
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+            <a
+                href="{{ url_for('patients') }}"
+                class="nav-item active"
+            >
+                <span>♙</span>
+                Patients
+            </a>
+
+            <a
+                href="{{ url_for('clinical_cases') }}"
+                class="nav-item"
+            >
+                <span>◈</span>
+                Clinical Cases
+            </a>
+
+            <a
+                href="#"
+                class="nav-item"
+            >
+                <span>⌁</span>
+                Evidence
+            </a>
+
+            <div class="nav-divider"></div>
+
+            <a
+                href="{{ url_for('settings') }}"
+                class="nav-item"
+            >
+                <span>⚙</span>
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="doctor-mini">
+
+                <div class="avatar">
+                    {{ doctor_initials or "DR" }}
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name or "Doctor" }}
+                    </strong>
+
+                    <span>
+                        Medical Staff
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="chat-main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    SECURE COMMUNICATION
+                </span>
+
+                <h1>
+                    Patient Chat
+                </h1>
+
+                <p>
+                    Secure communication with your patient.
+                </p>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <a
+                    href="{{ url_for('patient_profile', patient_id=patient.id) }}"
+                    class="back-button"
+                >
+                    ← Patient Profile
+                </a>
+
+                <div class="profile">
+
+                    <div class="avatar">
+                        {{ doctor_initials or "DR" }}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ doctor_name or "Doctor" }}
+                        </strong>
+
+                        <small>
+                            Clinical Staff
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             CHAT CONTAINER
+        ================================================== -->
+
+        <section class="chat-container">
+
+
+            <!-- CHAT HEADER -->
+
+            <div class="chat-header">
+
+                <div class="patient-identity">
+
+                    <div class="patient-avatar">
+
+                        {{ patient.first_name[0].upper() }}
+                        {{ patient.last_name[0].upper() }}
+
+                    </div>
+
+                    <div>
+
+                        <span class="eyebrow">
+                            PATIENT
+                        </span>
+
+                        <h2>
+                            {{ patient.first_name }}
+                            {{ patient.last_name }}
+                        </h2>
+
+                        <div class="patient-status">
+
+                            <span class="online-dot"></span>
+
+                            Secure channel active
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chat-actions">
+
+                    <a
+                        href="{{ url_for('patient_profile', patient_id=patient.id) }}"
+                        class="chat-action"
+                    >
+                        Patient Profile
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 MESSAGES
+            ================================================== -->
+
+            <div
+                class="messages"
+                id="messages"
+            >
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div
+                            class="message-row
+                            {% if message.sender_type == 'doctor' %}
+                                doctor-message
+                            {% else %}
+                                patient-message
+                            {% endif %}"
+                            data-message-id="{{ message.id }}"
+                        >
+
+                            <div class="message-bubble">
+
+                                <div class="message-meta">
+
+                                    {% if message.sender_type == "doctor" %}
+
+                                        <span>
+                                            You
+                                        </span>
+
+                                    {% else %}
+
+                                        <span>
+                                            {{ patient.first_name }}
+                                        </span>
+
+                                    {% endif %}
+
+                                    <time>
+                                        {{ message.created_at.strftime("%H:%M") }}
+                                    </time>
+
+                                </div>
+
+                                <div class="message-text">
+                                    {{ message.message }}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div
+                        class="empty-chat"
+                        id="emptyChat"
+                    >
+
+                        <div class="empty-chat-icon">
+                            ◉
+                        </div>
+
+                        <h3>
+                            Start a secure conversation
+                        </h3>
+
+                        <p>
+                            Send a message to
+                            {{ patient.first_name }}
+                            {{ patient.last_name }}.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 TYPING AREA
+            ================================================== -->
+
+            <div class="chat-composer">
+
+                <div
+                    class="composer-status"
+                    id="composerStatus"
+                >
+                    Secure clinical communication
+                </div>
+
+                <div class="composer-row">
+
+                    <textarea
+                        id="messageInput"
+                        placeholder="Type a secure message..."
+                        maxlength="5000"
+                        rows="1"
+                    ></textarea>
+
+                    <button
+                        type="button"
+                        id="sendButton"
+                    >
+                        <span>
+                            Send
+                        </span>
+
+                        <span>
+                            ➤
+                        </span>
+                    </button>
+
+                </div>
+
+                <div class="composer-footer">
+
+                    <span>
+                        Messages are associated with this patient record.
+                    </span>
+
+                    <span>
+                        ENTER to send
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <span>
+                ELORA MEDAI v0.1
+            </span>
+
+            <span>
+                Secure clinical communication ·
+                Clinical decision-support prototype
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <!-- =====================================================
+         CHAT JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        const patientId = {{ patient.id }};
+
+        const messagesContainer =
+            document.getElementById("messages");
+
+        const messageInput =
+            document.getElementById("messageInput");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const composerStatus =
+            document.getElementById("composerStatus");
+
+
+        // =====================================================
+        // SCROLL TO BOTTOM
+        // =====================================================
+
+        function scrollToBottom() {
+
+            messagesContainer.scrollTop =
+                messagesContainer.scrollHeight;
+
+        }
+
+
+        scrollToBottom();
+
+
+        // =====================================================
+        // ESCAPE HTML
+        // =====================================================
+
+        function escapeHtml(text) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent = text;
+
+            return div.innerHTML;
+
+        }
+
+
+        // =====================================================
+        // FORMAT TIME
+        // =====================================================
+
+        function formatTime(timestamp) {
+
+            if (!timestamp) {
+                return "";
+            }
+
+            const date =
+                new Date(timestamp);
+
+            return date.toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // ADD MESSAGE
+        // =====================================================
+
+        function addMessage(message) {
+
+            const emptyChat =
+                document.getElementById(
+                    "emptyChat"
+                );
+
+            if (emptyChat) {
+                emptyChat.remove();
+            }
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "message-row doctor-message";
+
+            row.dataset.messageId =
+                message.id;
+
+            row.innerHTML = `
+
+                <div class="message-bubble">
+
+                    <div class="message-meta">
+
+                        <span>
+                            You
+                        </span>
+
+                        <time>
+                            ${formatTime(message.created_at)}
+                        </time>
+
+                    </div>
+
+                    <div class="message-text">
+
+                        ${escapeHtml(message.message)}
+
+                    </div>
+
+                </div>
+
+            `;
+
+            messagesContainer.appendChild(row);
+
+            scrollToBottom();
+
+        }
+
+
+        // =====================================================
+        // SEND MESSAGE
+        // =====================================================
+
+        async function sendMessage() {
+
+            const text =
+                messageInput.value.trim();
+
+            if (!text) {
+                return;
+            }
+
+            sendButton.disabled = true;
+
+            composerStatus.textContent =
+                "Sending secure message...";
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/chat/${patientId}/send`,
+                        {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                message: text
+                            })
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Unable to send message."
+                    );
+
+                }
+
+
+                messageInput.value = "";
+
+                messageInput.style.height =
+                    "auto";
+
+                addMessage(
+                    data.message
+                );
+
+                composerStatus.textContent =
+                    "Message sent securely.";
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                composerStatus.textContent =
+                    error.message;
+
+            }
+
+            finally {
+
+                sendButton.disabled =
+                    false;
+
+                messageInput.focus();
+
+            }
+
+        }
+
+
+        // =====================================================
+        // SEND BUTTON
+        // =====================================================
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        // =====================================================
+        // ENTER TO SEND
+        // =====================================================
+
+        messageInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+        // =====================================================
+        // AUTO RESIZE TEXTAREA
+        // =====================================================
+
+        messageInput.addEventListener(
+            "input",
+            function() {
+
+                this.style.height =
+                    "auto";
+
+                this.style.height =
+                    Math.min(
+                        this.scrollHeight,
+                        160
+                    ) + "px";
+
+            }
+        );
+
+
+        // =====================================================
+        // REFRESH MESSAGES
+        // =====================================================
+
+        let lastMessageId = 0;
+
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                lastMessageId =
+                    Math.max(
+                        lastMessageId,
+                        {{ message.id }}
+                    );
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        async function checkForNewMessages() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `/api/chat/${patientId}`
+                    );
+
+                const data =
+                    await response.json();
+
+                if (!data.success) {
+                    return;
+                }
+
+                const messages =
+                    data.messages || [];
+
+                const latestMessages =
+                    messages.filter(
+                        message =>
+                            message.id >
+                            lastMessageId
+                    );
+
+                latestMessages.forEach(
+                    message => {
+
+                        if (
+                            message.sender_type ===
+                            "patient"
+                        ) {
+
+                            const row =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            row.className =
+                                "message-row patient-message";
+
+                            row.dataset.messageId =
+                                message.id;
+
+                            row.innerHTML = `
+
+                                <div class="message-bubble">
+
+                                    <div class="message-meta">
+
+                                        <span>
+                                            ${escapeHtml(
+                                                data.patient.name
+                                            )}
+                                        </span>
+
+                                        <time>
+                                            ${formatTime(
+                                                message.created_at
+                                            )}
+                                        </time>
+
+                                    </div>
+
+                                    <div class="message-text">
+
+                                        ${escapeHtml(
+                                            message.message
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                            messagesContainer.appendChild(
+                                row
+                            );
+
+                        }
+
+                        lastMessageId =
+                            Math.max(
+                                lastMessageId,
+                                message.id
+                            );
+
+                    }
+                );
+
+                if (latestMessages.length) {
+                    scrollToBottom();
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHAT REFRESH ERROR:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // Poll for patient messages.
+
+        setInterval(
+            checkForNewMessages,
+            3000
+        );
+
+
+    </script>
+
+</body>
+
+</html>
+```

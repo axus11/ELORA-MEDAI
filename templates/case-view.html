@@ -1,0 +1,5461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="ELORA MEDAI Clinical Intelligence Case Viewer"
+    >
+
+    <title>
+        ELORA MEDAI | {{ case.case_id }}
+    </title>
+
+
+    <!-- =====================================================
+         GLOBAL STYLES
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/cases.css') }}"
+    >
+
+
+    <!-- =====================================================
+         CASE VIEW STYLES
+    ====================================================== -->
+
+    <style>
+
+        /* =====================================================
+           RESET / FOUNDATION
+        ===================================================== */
+
+        .case-view-page {
+            --ai-blue: #667cff;
+            --ai-cyan: #42e8ff;
+            --ai-green: #52ffb0;
+            --ai-yellow: #ffd166;
+            --ai-red: #ff5f6d;
+            --ai-purple: #a66cff;
+
+            --panel-bg: rgba(255,255,255,.025);
+            --panel-border: rgba(255,255,255,.08);
+            --soft-text: rgba(255,255,255,.58);
+
+            position: relative;
+        }
+
+
+        /* =====================================================
+           BACKGROUND
+        ===================================================== */
+
+        .case-view-page::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                radial-gradient(
+                    circle at 80% 10%,
+                    rgba(102,124,255,.08),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 10% 80%,
+                    rgba(66,232,255,.04),
+                    transparent 25%
+                );
+
+            z-index: -2;
+        }
+
+
+        .case-view-page::after {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: .025;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,.5) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.5) 1px,
+                    transparent 1px
+                );
+
+            background-size: 60px 60px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    black,
+                    transparent 80%
+                );
+
+            z-index: -1;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .case-page-title-row {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-end;
+
+            gap: 25px;
+        }
+
+
+        .case-page-title-row h1 {
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .case-page-title-row p {
+
+            color: var(--soft-text);
+
+            max-width: 650px;
+
+        }
+
+
+        .case-header-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .header-tool {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 11px 15px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--panel-border);
+
+            background: rgba(255,255,255,.035);
+
+            color: inherit;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease;
+
+        }
+
+
+        .header-tool:hover {
+
+            transform: translateY(-2px);
+
+            background: rgba(255,255,255,.06);
+
+            border-color: rgba(255,255,255,.16);
+
+        }
+
+
+        /* =====================================================
+           CASE CONTROL
+        ===================================================== */
+
+        .case-control {
+
+            position: relative;
+
+            overflow: hidden;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 25px;
+
+            margin: 25px 0 35px;
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            border: 1px solid var(--panel-border);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(102,124,255,.055),
+                    rgba(255,255,255,.02)
+                );
+
+        }
+
+
+        .case-control::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 250px;
+
+            height: 250px;
+
+            right: -120px;
+
+            top: -170px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(102,124,255,.15);
+
+            box-shadow:
+                0 0 70px rgba(102,124,255,.08);
+
+        }
+
+
+        .case-id-area {
+
+            position: relative;
+
+            z-index: 1;
+
+        }
+
+
+        .case-id-area > span {
+
+            display: block;
+
+            font-size: 9px;
+
+            letter-spacing: 2px;
+
+            color: var(--soft-text);
+
+            margin-bottom: 6px;
+
+        }
+
+
+        .case-id-area strong {
+
+            font-size: 22px;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .case-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-left: 12px;
+
+            padding: 6px 10px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            letter-spacing: 1px;
+
+            background: rgba(82,255,176,.06);
+
+            border: 1px solid rgba(82,255,176,.14);
+
+        }
+
+
+        .case-status i {
+
+            width: 6px;
+
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: var(--ai-green);
+
+            box-shadow:
+                0 0 12px var(--ai-green);
+
+        }
+
+
+        .case-actions {
+
+            position: relative;
+
+            z-index: 1;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .analyze-button {
+
+            position: relative;
+
+            overflow: hidden;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 9px;
+
+            padding: 13px 20px;
+
+            border: 1px solid rgba(102,124,255,.35);
+
+            border-radius: 11px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(102,124,255,.22),
+                    rgba(102,124,255,.08)
+                );
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            transition: .25s ease;
+
+        }
+
+
+        .analyze-button::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            transform: translateX(-110%);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.15),
+                    transparent
+                );
+
+            transition: transform .5s ease;
+
+        }
+
+
+        .analyze-button:hover::before {
+
+            transform: translateX(110%);
+
+        }
+
+
+        .analyze-button:hover {
+
+            transform: translateY(-2px);
+
+            border-color: rgba(102,124,255,.6);
+
+            box-shadow:
+                0 0 30px rgba(102,124,255,.15);
+
+        }
+
+
+        .analyze-button:disabled {
+
+            opacity: .55;
+
+            cursor: wait;
+
+            transform: none;
+
+        }
+
+
+        .secondary-action {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 13px 18px;
+
+            border-radius: 11px;
+
+            text-decoration: none;
+
+            color: inherit;
+
+            border: 1px solid var(--panel-border);
+
+            background: rgba(255,255,255,.025);
+
+            cursor: pointer;
+
+            transition: .2s ease;
+
+        }
+
+
+        .secondary-action:hover {
+
+            background: rgba(255,255,255,.06);
+
+            border-color: rgba(255,255,255,.15);
+
+        }
+
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
+
+        .clinical-section {
+
+            margin-bottom: 38px;
+
+        }
+
+
+        .clinical-section-header {
+
+            margin-bottom: 17px;
+
+        }
+
+
+        .clinical-section-header > div {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 13px;
+
+        }
+
+
+        .section-code {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            width: 32px;
+
+            height: 32px;
+
+            border-radius: 9px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            color: var(--ai-cyan);
+
+            background: rgba(66,232,255,.05);
+
+            border: 1px solid rgba(66,232,255,.12);
+
+        }
+
+
+        .clinical-section-header h2 {
+
+            margin: 0 0 4px;
+
+        }
+
+
+        .clinical-section-header p {
+
+            margin: 0;
+
+            font-size: 13px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        /* =====================================================
+           CASE GRID
+        ===================================================== */
+
+        .case-view-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0,1fr)
+                );
+
+            gap: 15px;
+
+        }
+
+
+        .case-info-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 21px;
+
+            border-radius: 15px;
+
+            border: 1px solid var(--panel-border);
+
+            background: var(--panel-bg);
+
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease;
+
+        }
+
+
+        .case-info-card::after {
+
+            content: "";
+
+            position: absolute;
+
+            right: -30px;
+
+            bottom: -40px;
+
+            width: 100px;
+
+            height: 100px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(255,255,255,.04);
+
+        }
+
+
+        .case-info-card:hover {
+
+            transform: translateY(-2px);
+
+            border-color: rgba(255,255,255,.13);
+
+            background: rgba(255,255,255,.035);
+
+        }
+
+
+        .case-info-card.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .case-info-card span {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 9px;
+
+            letter-spacing: 1.8px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .case-info-card strong {
+
+            display: block;
+
+            font-size: 16px;
+
+            line-height: 1.45;
+
+        }
+
+
+        .case-info-card p {
+
+            margin: 0;
+
+            line-height: 1.75;
+
+            color: rgba(255,255,255,.72);
+
+            white-space: pre-line;
+
+        }
+
+
+        /* =====================================================
+           VITALS
+        ===================================================== */
+
+        .vitals-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    6,
+                    minmax(0,1fr)
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .vital-card {
+
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 18px;
+
+            border-radius: 14px;
+
+            border: 1px solid var(--panel-border);
+
+            background: rgba(255,255,255,.025);
+
+        }
+
+
+        .vital-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+
+            top: 0;
+
+            width: 2px;
+
+            height: 100%;
+
+            background: rgba(66,232,255,.35);
+
+        }
+
+
+        .vital-card > span {
+
+            display: block;
+
+            margin-bottom: 12px;
+
+            font-size: 8px;
+
+            letter-spacing: 1.5px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .vital-card > div {
+
+            display: flex;
+
+            align-items: baseline;
+
+            gap: 6px;
+
+        }
+
+
+        .vital-card strong {
+
+            font-size: 23px;
+
+        }
+
+
+        .vital-card small {
+
+            color: var(--soft-text);
+
+            font-size: 9px;
+
+        }
+
+
+        /* =====================================================
+           HISTORY SPLIT
+        ===================================================== */
+
+        .split-section {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0,1fr)
+                );
+
+            gap: 20px;
+
+        }
+
+
+        /* =====================================================
+           AI PANEL
+        ===================================================== */
+
+        .ai-panel {
+
+            position: relative;
+
+            overflow: hidden;
+
+            margin: 45px 0;
+
+            padding: 28px;
+
+            border-radius: 22px;
+
+            border: 1px solid rgba(102,124,255,.16);
+
+            background:
+                radial-gradient(
+                    circle at 85% 5%,
+                    rgba(102,124,255,.13),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 10% 90%,
+                    rgba(66,232,255,.05),
+                    transparent 30%
+                ),
+                rgba(255,255,255,.025);
+
+            box-shadow:
+                0 20px 80px rgba(0,0,0,.15);
+
+        }
+
+
+        .ai-panel::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+
+            height: 500px;
+
+            right: -260px;
+
+            top: -270px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(102,124,255,.13);
+
+            box-shadow:
+                0 0 100px rgba(102,124,255,.08);
+
+            pointer-events: none;
+
+        }
+
+
+        .ai-panel::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent 49.8%,
+                    rgba(102,124,255,.025) 50%,
+                    transparent 50.2%
+                );
+
+            opacity: .4;
+
+        }
+
+
+        .ai-panel-header {
+
+            position: relative;
+
+            z-index: 2;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 30px;
+
+        }
+
+
+        .ai-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+        }
+
+
+        /* =====================================================
+           AI CORE
+        ===================================================== */
+
+        .ai-core-large {
+
+            position: relative;
+
+            width: 54px;
+
+            height: 54px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            font-size: 20px;
+
+            font-weight: 900;
+
+            border: 1px solid rgba(102,124,255,.4);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(102,124,255,.3),
+                    rgba(102,124,255,.04) 60%,
+                    transparent 70%
+                );
+
+            box-shadow:
+                0 0 30px rgba(102,124,255,.22);
+
+            animation:
+                aiCorePulse 3s ease-in-out infinite;
+
+        }
+
+
+        .ai-core-large::before,
+        .ai-core-large::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: -7px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(102,124,255,.18);
+
+            animation:
+                aiOrbit 5s linear infinite;
+
+        }
+
+
+        .ai-core-large::after {
+
+            inset: -13px;
+
+            border-color: rgba(66,232,255,.1);
+
+            animation-duration: 8s;
+
+            animation-direction: reverse;
+
+        }
+
+
+        @keyframes aiCorePulse {
+
+            0%,
+            100% {
+
+                transform: scale(1);
+
+                box-shadow:
+                    0 0 25px rgba(102,124,255,.2);
+
+            }
+
+            50% {
+
+                transform: scale(1.06);
+
+                box-shadow:
+                    0 0 50px rgba(102,124,255,.35);
+
+            }
+
+        }
+
+
+        @keyframes aiOrbit {
+
+            from {
+
+                transform: rotate(0deg);
+
+            }
+
+            to {
+
+                transform: rotate(360deg);
+
+            }
+
+        }
+
+
+        .ai-title span {
+
+            display: block;
+
+            font-size: 9px;
+
+            letter-spacing: 2px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .ai-title h2 {
+
+            margin: 4px 0 0;
+
+            font-size: 21px;
+
+        }
+
+
+        .ai-engine-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 8px 12px;
+
+            border-radius: 999px;
+
+            font-size: 9px;
+
+            letter-spacing: 1px;
+
+            color: var(--ai-green);
+
+            background: rgba(82,255,176,.05);
+
+            border: 1px solid rgba(82,255,176,.14);
+
+        }
+
+
+        .ai-engine-status span {
+
+            width: 6px;
+
+            height: 6px;
+
+            margin-right: 7px;
+
+            border-radius: 50%;
+
+            background: var(--ai-green);
+
+            box-shadow:
+                0 0 12px var(--ai-green);
+
+            animation:
+                statusBlink 1.8s ease-in-out infinite;
+
+        }
+
+
+        @keyframes statusBlink {
+
+            0%,
+            100% {
+
+                opacity: 1;
+
+            }
+
+            50% {
+
+                opacity: .3;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           AI READY
+        ===================================================== */
+
+        .ai-ready-state {
+
+            position: relative;
+
+            z-index: 2;
+
+            text-align: center;
+
+            padding: 35px 20px 45px;
+
+        }
+
+
+        .ai-loading-core {
+
+            position: relative;
+
+            width: 100px;
+
+            height: 100px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin: 0 auto 28px;
+
+            border-radius: 50%;
+
+            font-size: 25px;
+
+            font-weight: 900;
+
+            border: 1px solid rgba(102,124,255,.28);
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(102,124,255,.15),
+                    transparent 65%
+                );
+
+            box-shadow:
+                0 0 55px rgba(102,124,255,.12);
+
+        }
+
+
+        .ai-loading-core::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: -12px;
+
+            border-radius: 50%;
+
+            border:
+                1px dashed
+                rgba(102,124,255,.22);
+
+            animation:
+                aiOrbit 12s linear infinite;
+
+        }
+
+
+        .ai-loading-core::after {
+
+            content: "";
+
+            position: absolute;
+
+            inset: -25px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid
+                rgba(66,232,255,.06);
+
+        }
+
+
+        .ai-ready-state h3 {
+
+            margin: 0 0 9px;
+
+            font-size: 20px;
+
+        }
+
+
+        .ai-ready-state p {
+
+            max-width: 650px;
+
+            margin: 0 auto 25px;
+
+            line-height: 1.7;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .run-ai-button {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 14px 23px;
+
+            border-radius: 11px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(102,124,255,.2),
+                    rgba(66,232,255,.07)
+                );
+
+            border: 1px solid rgba(102,124,255,.3);
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            transition: .25s ease;
+
+        }
+
+
+        .run-ai-button:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 0 35px rgba(102,124,255,.16);
+
+        }
+
+
+        .run-ai-button:disabled {
+
+            opacity: .5;
+
+            cursor: wait;
+
+        }
+
+
+        /* =====================================================
+           AI PROCESSING
+        ===================================================== */
+
+        .ai-processing {
+
+            display: none;
+
+            position: relative;
+
+            z-index: 2;
+
+            padding: 25px;
+
+        }
+
+
+        .ai-processing.active {
+
+            display: block;
+
+        }
+
+
+        .processing-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .processing-label {
+
+            font-size: 10px;
+
+            letter-spacing: 1.5px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .processing-percent {
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            color: var(--ai-cyan);
+
+        }
+
+
+        .processing-bar {
+
+            height: 4px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background: rgba(255,255,255,.06);
+
+        }
+
+
+        .processing-progress {
+
+            width: 0%;
+
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--ai-blue),
+                    var(--ai-cyan)
+                );
+
+            box-shadow:
+                0 0 15px rgba(66,232,255,.5);
+
+            transition:
+                width .35s ease;
+
+        }
+
+
+        .processing-steps {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    1fr
+                );
+
+            gap: 10px;
+
+            margin-top: 20px;
+
+        }
+
+
+        .processing-step {
+
+            padding: 11px;
+
+            border-radius: 9px;
+
+            font-size: 9px;
+
+            letter-spacing: .8px;
+
+            color: rgba(255,255,255,.4);
+
+            border: 1px solid rgba(255,255,255,.05);
+
+            background: rgba(255,255,255,.015);
+
+        }
+
+
+        .processing-step.active {
+
+            color: var(--ai-cyan);
+
+            border-color:
+                rgba(66,232,255,.16);
+
+            background:
+                rgba(66,232,255,.04);
+
+        }
+
+
+        .processing-step.complete {
+
+            color: var(--ai-green);
+
+        }
+
+
+        /* =====================================================
+           AI RESULTS
+        ===================================================== */
+
+        #aiResults {
+
+            display: none;
+
+            position: relative;
+
+            z-index: 2;
+
+        }
+
+
+        .analysis-meta {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+            color: var(--soft-text);
+
+            font-size: 10px;
+
+        }
+
+
+        .analysis-actions {
+
+            display: flex;
+
+            gap: 8px;
+
+        }
+
+
+        .mini-button {
+
+            padding: 8px 11px;
+
+            border-radius: 8px;
+
+            color: inherit;
+
+            background: rgba(255,255,255,.03);
+
+            border: 1px solid rgba(255,255,255,.07);
+
+            cursor: pointer;
+
+        }
+
+
+        .mini-button:hover {
+
+            background: rgba(255,255,255,.07);
+
+        }
+
+
+        /* =====================================================
+           RISK BANNER
+        ===================================================== */
+
+        .ai-risk-banner {
+
+            position: relative;
+
+            overflow: hidden;
+
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr
+                1fr;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            background: rgba(255,255,255,.025);
+
+        }
+
+
+        .ai-risk-banner > div {
+
+            padding: 5px 15px;
+
+            border-right:
+                1px solid
+                rgba(255,255,255,.06);
+
+        }
+
+
+        .ai-risk-banner > div:last-child {
+
+            border-right: 0;
+
+        }
+
+
+        .ai-risk-banner span {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 8px;
+
+            letter-spacing: 1.6px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .risk-value {
+
+            font-size: 27px;
+
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+        }
+
+
+        .risk-value.high {
+
+            color: var(--ai-red);
+
+            text-shadow:
+                0 0 20px rgba(255,95,109,.3);
+
+        }
+
+
+        .risk-value.moderate {
+
+            color: var(--ai-yellow);
+
+            text-shadow:
+                0 0 20px rgba(255,209,102,.2);
+
+        }
+
+
+        .risk-value.low {
+
+            color: var(--ai-green);
+
+            text-shadow:
+                0 0 20px rgba(82,255,176,.2);
+
+        }
+
+
+        .confidence-value {
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+        }
+
+
+        .analysis-time {
+
+            font-size: 12px;
+
+            color: rgba(255,255,255,.6);
+
+        }
+
+
+        /* =====================================================
+           RESULT GRID
+        ===================================================== */
+
+        .ai-result-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0,1fr)
+                );
+
+            gap: 15px;
+
+        }
+
+
+        .ai-result-card {
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.07);
+
+            background:
+                rgba(255,255,255,.022);
+
+        }
+
+
+        .ai-result-card.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .ai-result-card h3 {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            margin: 0 0 14px;
+
+            font-size: 14px;
+
+        }
+
+
+        .ai-result-card h3::before {
+
+            content: "";
+
+            width: 5px;
+
+            height: 5px;
+
+            border-radius: 50%;
+
+            background: var(--ai-cyan);
+
+            box-shadow:
+                0 0 9px var(--ai-cyan);
+
+        }
+
+
+        .ai-result-card p {
+
+            margin: 0;
+
+            color: rgba(255,255,255,.72);
+
+            line-height: 1.7;
+
+        }
+
+
+        .ai-result-card ul {
+
+            padding-left: 18px;
+
+            margin: 0;
+
+        }
+
+
+        .ai-result-card li {
+
+            margin-bottom: 10px;
+
+            color: rgba(255,255,255,.72);
+
+            line-height: 1.55;
+
+        }
+
+
+        /* =====================================================
+           RISK FLAG
+        ===================================================== */
+
+        .risk-flag {
+
+            position: relative;
+
+            margin-bottom: 9px;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.06);
+
+            background:
+                rgba(255,255,255,.025);
+
+        }
+
+
+        .risk-flag:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+
+        .risk-flag strong {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-size: 11px;
+
+        }
+
+
+        .risk-flag div {
+
+            color: rgba(255,255,255,.58);
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+        }
+
+
+        .risk-flag.high {
+
+            border-color:
+                rgba(255,95,109,.15);
+
+            background:
+                rgba(255,95,109,.04);
+
+        }
+
+
+        .risk-flag.high strong {
+
+            color: var(--ai-red);
+
+        }
+
+
+        .risk-flag.moderate {
+
+            border-color:
+                rgba(255,209,102,.15);
+
+            background:
+                rgba(255,209,102,.035);
+
+        }
+
+
+        .risk-flag.moderate strong {
+
+            color: var(--ai-yellow);
+
+        }
+
+
+        .risk-flag.low strong {
+
+            color: var(--ai-green);
+
+        }
+
+
+        /* =====================================================
+           DISCLAIMER
+        ===================================================== */
+
+        .ai-disclaimer-box {
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 11px;
+
+            font-size: 11px;
+
+            line-height: 1.65;
+
+            color: rgba(255,255,255,.52);
+
+            border:
+                1px solid
+                rgba(255,255,255,.07);
+
+            background:
+                rgba(255,255,255,.018);
+
+        }
+
+
+        .ai-disclaimer-box > span {
+
+            margin-left: 5px;
+
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .analysis-error {
+
+            display: none;
+
+            position: relative;
+
+            z-index: 3;
+
+            margin-top: 15px;
+
+            padding: 15px;
+
+            border-radius: 11px;
+
+            color: #ff9ca5;
+
+            background:
+                rgba(255,70,70,.07);
+
+            border:
+                1px solid
+                rgba(255,70,70,.18);
+
+            font-size: 12px;
+
+        }
+
+
+        /* =====================================================
+           STATUS SECTION
+        ===================================================== */
+
+        .status-panel {
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.07);
+
+            background:
+                rgba(255,255,255,.02);
+
+        }
+
+
+        .status-form {
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 15px;
+
+        }
+
+
+        .clinical-field {
+
+            flex: 1;
+
+        }
+
+
+        .clinical-field label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 9px;
+
+            letter-spacing: 1.5px;
+
+            color: var(--soft-text);
+
+        }
+
+
+        .clinical-field select {
+
+            width: 100%;
+
+            padding: 13px 14px;
+
+            color: inherit;
+
+            background:
+                rgba(255,255,255,.04);
+
+            border:
+                1px solid
+                rgba(255,255,255,.09);
+
+            border-radius: 10px;
+
+            outline: none;
+
+        }
+
+
+        /* =====================================================
+           BOTTOM ACTIONS
+        ===================================================== */
+
+        .clinical-bottom-actions {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            padding: 22px 0 30px;
+
+            margin-top: 20px;
+
+            border-top:
+                1px solid
+                rgba(255,255,255,.06);
+
+        }
+
+
+        .cancel-button {
+
+            color: var(--soft-text);
+
+            text-decoration: none;
+
+        }
+
+
+        .delete-case-button {
+
+            padding: 11px 16px;
+
+            border-radius: 10px;
+
+            color: #ff8e98;
+
+            background:
+                rgba(255,70,70,.05);
+
+            border:
+                1px solid
+                rgba(255,70,70,.15);
+
+            cursor: pointer;
+
+        }
+
+
+        .delete-case-button:hover {
+
+            background:
+                rgba(255,70,70,.1);
+
+        }
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        .elora-toast {
+
+            position: fixed;
+
+            right: 25px;
+
+            bottom: 25px;
+
+            z-index: 9999;
+
+            max-width: 350px;
+
+            padding: 14px 17px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(15,18,30,.94);
+
+            border:
+                1px solid
+                rgba(255,255,255,.1);
+
+            box-shadow:
+                0 20px 50px rgba(0,0,0,.3);
+
+            transform:
+                translateY(25px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: .3s ease;
+
+            font-size: 12px;
+
+        }
+
+
+        .elora-toast.show {
+
+            transform:
+                translateY(0);
+
+            opacity: 1;
+
+        }
+
+
+        .elora-toast.success {
+
+            border-color:
+                rgba(82,255,176,.2);
+
+        }
+
+
+        .elora-toast.error {
+
+            border-color:
+                rgba(255,95,109,.2);
+
+        }
+
+
+        /* =====================================================
+           DELETE MODAL
+        ===================================================== */
+
+        .delete-modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9998;
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            background:
+                rgba(0,0,0,.72);
+
+            backdrop-filter:
+                blur(12px);
+
+        }
+
+
+        .delete-modal.active {
+
+            display: flex;
+
+        }
+
+
+        .delete-modal-card {
+
+            width: min(
+                440px,
+                100%
+            );
+
+            padding: 28px;
+
+            border-radius: 18px;
+
+            background:
+                #0d111c;
+
+            border:
+                1px solid
+                rgba(255,255,255,.1);
+
+            box-shadow:
+                0 30px 100px rgba(0,0,0,.5);
+
+            animation:
+                modalIn .25s ease;
+
+        }
+
+
+        @keyframes modalIn {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(15px)
+                    scale(.97);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+        .delete-modal-card h3 {
+
+            margin-top: 0;
+
+        }
+
+
+        .delete-modal-card p {
+
+            color: var(--soft-text);
+
+            line-height: 1.6;
+
+        }
+
+
+        .modal-actions {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 22px;
+
+        }
+
+
+        .modal-cancel,
+        .modal-delete {
+
+            padding: 11px 16px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+        }
+
+
+        .modal-cancel {
+
+            color: inherit;
+
+            background:
+                rgba(255,255,255,.04);
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
+        }
+
+
+        .modal-delete {
+
+            color: white;
+
+            background:
+                rgba(255,70,70,.12);
+
+            border:
+                1px solid
+                rgba(255,70,70,.22);
+
+        }
+
+
+        /* =====================================================
+           PRINT
+        ===================================================== */
+
+        @media print {
+
+            .clinical-sidebar,
+            .case-actions,
+            .case-header-actions,
+            .ai-engine-status,
+            .run-ai-button,
+            .analysis-actions,
+            .clinical-bottom-actions,
+            .delete-modal,
+            .elora-toast {
+
+                display: none !important;
+
+            }
+
+
+            .clinical-main {
+
+                margin: 0 !important;
+
+                width: 100% !important;
+
+            }
+
+
+            .ai-panel {
+
+                border:
+                    1px solid #ddd;
+
+                color: black;
+
+                background: white;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .vitals-grid {
+
+                grid-template-columns:
+                    repeat(
+                        3,
+                        minmax(0,1fr)
+                    );
+
+            }
+
+        }
+
+
+        @media (max-width: 900px) {
+
+            .case-view-grid,
+            .ai-result-grid,
+            .split-section {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .case-info-card.full,
+            .ai-result-card.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .case-control {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .case-actions {
+
+                width: 100%;
+
+            }
+
+
+            .case-actions > * {
+
+                flex: 1;
+
+            }
+
+
+            .ai-panel-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .ai-risk-banner {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .ai-risk-banner > div {
+
+                border-right: 0;
+
+                border-bottom:
+                    1px solid
+                    rgba(255,255,255,.06);
+
+                padding-bottom: 13px;
+
+            }
+
+
+            .ai-risk-banner > div:last-child {
+
+                border-bottom: 0;
+
+            }
+
+
+            .processing-steps {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        1fr
+                    );
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .case-page-title-row {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .vitals-grid {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0,1fr)
+                    );
+
+            }
+
+
+            .case-actions {
+
+                flex-direction: column;
+
+            }
+
+
+            .case-actions > * {
+
+                width: 100%;
+
+            }
+
+
+            .status-form {
+
+                align-items: stretch;
+
+                flex-direction: column;
+
+            }
+
+
+            .clinical-bottom-actions {
+
+                align-items: stretch;
+
+                flex-direction: column;
+
+            }
+
+
+            .analysis-meta {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .ai-panel {
+
+                padding: 20px;
+
+            }
+
+        }
+
+
+        @media (max-width: 430px) {
+
+            .vitals-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .processing-steps {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .ai-title h2 {
+
+                font-size: 18px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="clinical-page case-view-page">
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="clinical-sidebar">
+
+    <div class="clinical-brand">
+
+        <div class="clinical-logo">
+            E
+        </div>
+
+        <div>
+
+            <strong>
+                ELORA
+            </strong>
+
+            <span>
+                MEDAI
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="clinical-system">
+
+        <span></span>
+
+        AI SYSTEM ONLINE
+
+    </div>
+
+
+    <nav class="clinical-nav">
+
+        <a href="{{ url_for('dashboard') }}">
+
+            <span>⌂</span>
+
+            Dashboard
+
+        </a>
+
+
+        <a href="{{ url_for('patients') }}">
+
+            <span>♙</span>
+
+            Patients
+
+        </a>
+
+
+        <a
+            href="{{ url_for('clinical_cases') }}"
+            class="active"
+        >
+
+            <span>◈</span>
+
+            Clinical Cases
+
+        </a>
+
+
+        <a href="#">
+
+            <span>⌁</span>
+
+            Evidence
+
+        </a>
+
+
+        <div class="clinical-divider"></div>
+
+
+        <a href="#">
+
+            <span>⚙</span>
+
+            Settings
+
+        </a>
+
+    </nav>
+
+
+    <div class="clinical-sidebar-bottom">
+
+        <div class="clinical-user">
+
+            <div class="clinical-avatar">
+
+                {{ doctor_initials }}
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    {{ doctor_name }}
+                </strong>
+
+                <small>
+                    Medical Staff
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-link"
+        >
+
+            ↪ Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="clinical-main">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="clinical-header">
+
+        <div class="case-page-title-row">
+
+            <div>
+
+                <div class="breadcrumb">
+
+                    ELORA MEDAI
+
+                    <span>/</span>
+
+                    Clinical Cases
+
+                    <span>/</span>
+
+                    {{ case.case_id }}
+
+                </div>
+
+
+                <h1>
+                    Clinical Case
+                </h1>
+
+
+                <p>
+                    Review clinical information and run
+                    ELORA clinical intelligence analysis.
+                </p>
+
+            </div>
+
+
+            <div class="case-header-actions">
+
+                <button
+                    type="button"
+                    class="header-tool"
+                    id="printReportButton"
+                >
+
+                    ⎙
+
+                    Print Report
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <div class="secure-status">
+
+                <span></span>
+
+                SECURE SESSION
+
+            </div>
+
+
+            <div class="doctor-header">
+
+                <div class="clinical-avatar">
+
+                    {{ doctor_initials }}
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name }}
+                    </strong>
+
+                    <small>
+                        Clinical Staff
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CASE CONTROL
+    ====================================================== -->
+
+    <section class="case-control">
+
+        <div class="case-id-area">
+
+            <span>
+                CASE IDENTIFIER
+            </span>
+
+            <strong>
+                #{{ case.case_id }}
+            </strong>
+
+
+            <div class="case-status">
+
+                <i></i>
+
+                {{ case.status }}
+
+            </div>
+
+        </div>
+
+
+        <div class="case-actions">
+
+            <a
+                href="{{ url_for('clinical_cases') }}"
+                class="secondary-action"
+            >
+
+                ← Back to Cases
+
+            </a>
+
+
+            <button
+                type="button"
+                id="runAIButton"
+                class="analyze-button"
+            >
+
+                ✦
+
+                Analyze with ELORA AI
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PATIENT INFORMATION
+    ====================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    01
+                </div>
+
+                <div>
+
+                    <h2>
+                        Patient Information
+                    </h2>
+
+                    <p>
+                        Registered patient associated with this case.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="case-view-grid">
+
+
+            <div class="case-info-card">
+
+                <span>
+                    PATIENT
+                </span>
+
+                <strong>
+                    {{ patient.full_name }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    PATIENT ID
+                </span>
+
+                <strong>
+                    {{ patient.patient_id }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    DATE OF BIRTH
+                </span>
+
+                <strong>
+                    {{ patient.date_of_birth }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    GENDER
+                </span>
+
+                <strong>
+                    {{ patient.gender or "Not specified" }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    EMAIL
+                </span>
+
+                <strong>
+                    {{ patient.email or "Not provided" }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    PHONE
+                </span>
+
+                <strong>
+                    {{ patient.phone or "Not provided" }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CLINICAL PRESENTATION
+    ====================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    02
+                </div>
+
+                <div>
+
+                    <h2>
+                        Clinical Presentation
+                    </h2>
+
+                    <p>
+                        Submitted clinical information.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="case-view-grid">
+
+
+            <div class="case-info-card">
+
+                <span>
+                    CHIEF COMPLAINT
+                </span>
+
+                <strong>
+                    {{ case.chief_complaint or "Not provided" }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    ONSET
+                </span>
+
+                <strong>
+                    {{ case.onset or "Not specified" }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <span>
+                    SEVERITY
+                </span>
+
+                <strong>
+                    {{ case.severity or "Not specified" }}
+                </strong>
+
+            </div>
+
+
+            <div class="case-info-card full">
+
+                <span>
+                    SYMPTOMS & FINDINGS
+                </span>
+
+                <p>
+                    {{ case.symptoms or "No symptoms provided." }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         VITAL SIGNS
+    ====================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    03
+                </div>
+
+                <div>
+
+                    <h2>
+                        Vital Signs
+                    </h2>
+
+                    <p>
+                        Recorded measurements.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="vitals-grid">
+
+
+            <div class="vital-card">
+
+                <span>
+                    BLOOD PRESSURE
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.blood_pressure or "—" }}
+                    </strong>
+
+                    <small>
+                        mmHg
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="vital-card">
+
+                <span>
+                    HEART RATE
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.heart_rate or "—" }}
+                    </strong>
+
+                    <small>
+                        BPM
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="vital-card">
+
+                <span>
+                    TEMPERATURE
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.temperature or "—" }}
+                    </strong>
+
+                    <small>
+                        °C
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="vital-card">
+
+                <span>
+                    SpO₂
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.spo2 or "—" }}
+                    </strong>
+
+                    <small>
+                        %
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="vital-card">
+
+                <span>
+                    RESPIRATORY RATE
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.respiratory_rate or "—" }}
+                    </strong>
+
+                    <small>
+                        /MIN
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="vital-card">
+
+                <span>
+                    WEIGHT
+                </span>
+
+                <div>
+
+                    <strong>
+                        {{ case.weight or "—" }}
+                    </strong>
+
+                    <small>
+                        KG
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         HISTORY
+    ====================================================== -->
+
+    <section class="split-section">
+
+
+        <div class="clinical-section">
+
+            <div class="clinical-section-header">
+
+                <div>
+
+                    <div class="section-code">
+                        04
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Medical History
+                        </h2>
+
+                        <p>
+                            Previous conditions and relevant history.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <p>
+                    {{ case.medical_history or "No medical history provided." }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="clinical-section">
+
+            <div class="clinical-section-header">
+
+                <div>
+
+                    <div class="section-code">
+                        05
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Medications & Allergies
+                        </h2>
+
+                        <p>
+                            Current medications and reported allergies.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="case-info-card">
+
+                <p>
+                    {{ case.medications or "No medications or allergies provided." }}
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ELORA AI
+    ====================================================== -->
+
+    <section class="ai-panel" id="aiPanel">
+
+
+        <div class="ai-panel-header">
+
+            <div class="ai-title">
+
+                <div class="ai-core-large">
+                    E
+                </div>
+
+                <div>
+
+                    <span>
+                        ELORA AI CORE
+                    </span>
+
+                    <h2>
+                        Clinical Intelligence
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="ai-engine-status">
+
+                <span></span>
+
+                ENGINE READY
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             READY STATE
+        ================================================= -->
+
+        <div
+            id="aiReadyState"
+            class="ai-ready-state"
+        >
+
+            <div class="ai-loading-core">
+                E
+            </div>
+
+
+            <h3 id="aiStatus">
+                Ready for analysis
+            </h3>
+
+
+            <p id="aiMessage">
+
+                ELORA will evaluate the submitted clinical
+                information using its clinical decision-support engine.
+
+            </p>
+
+
+            <button
+                type="button"
+                id="runAIButtonCenter"
+                class="run-ai-button"
+            >
+
+                ✦
+
+                Run ELORA Clinical Analysis
+
+            </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PROCESSING
+        ================================================= -->
+
+        <div
+            id="aiProcessing"
+            class="ai-processing"
+        >
+
+            <div class="processing-header">
+
+                <span class="processing-label">
+                    ELORA NEURAL ANALYSIS PIPELINE
+                </span>
+
+                <span
+                    id="processingPercent"
+                    class="processing-percent"
+                >
+                    0%
+                </span>
+
+            </div>
+
+
+            <div class="processing-bar">
+
+                <div
+                    id="processingProgress"
+                    class="processing-progress"
+                ></div>
+
+            </div>
+
+
+            <div class="processing-steps">
+
+                <div
+                    class="processing-step"
+                    data-step="1"
+                >
+                    01 · VITALS
+                </div>
+
+                <div
+                    class="processing-step"
+                    data-step="2"
+                >
+                    02 · SYMPTOMS
+                </div>
+
+                <div
+                    class="processing-step"
+                    data-step="3"
+                >
+                    03 · PATTERNS
+                </div>
+
+                <div
+                    class="processing-step"
+                    data-step="4"
+                >
+                    04 · RISK
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             RESULTS
+        ================================================= -->
+
+        <div id="aiResults">
+
+
+            <div class="analysis-meta">
+
+                <span id="analysisTimestamp">
+                    Analysis complete
+                </span>
+
+
+                <div class="analysis-actions">
+
+                    <button
+                        type="button"
+                        class="mini-button"
+                        id="copyAnalysisButton"
+                    >
+                        Copy Analysis
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="mini-button"
+                        id="rerunAnalysisButton"
+                    >
+                        ↻ Re-run
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RISK -->
+
+            <div class="ai-risk-banner">
+
+
+                <div>
+
+                    <span>
+                        OVERALL RISK
+                    </span>
+
+                    <div
+                        id="aiRisk"
+                        class="risk-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        CONFIDENCE
+                    </span>
+
+                    <div
+                        id="aiConfidence"
+                        class="confidence-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        ENGINE
+                    </span>
+
+                    <div
+                        id="analysisEngine"
+                        class="analysis-time"
+                    >
+                        ELORA MEDAI
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RESULT GRID -->
+
+            <div class="ai-result-grid">
+
+
+                <!-- SUMMARY -->
+
+                <div class="ai-result-card full">
+
+                    <h3>
+                        Clinical Summary
+                    </h3>
+
+                    <p id="aiSummary">
+                        —
+                    </p>
+
+                </div>
+
+
+
+                <!-- FINDINGS -->
+
+                <div class="ai-result-card">
+
+                    <h3>
+                        Findings
+                    </h3>
+
+                    <ul id="aiFindings"></ul>
+
+                </div>
+
+
+
+                <!-- RISK FLAGS -->
+
+                <div class="ai-result-card">
+
+                    <h3>
+                        Risk Flags
+                    </h3>
+
+                    <div id="aiRisks"></div>
+
+                </div>
+
+
+
+                <!-- DIFFERENTIAL -->
+
+                <div class="ai-result-card">
+
+                    <h3>
+                        Differential Considerations
+                    </h3>
+
+                    <div id="aiDifferential"></div>
+
+                </div>
+
+
+
+                <!-- RECOMMENDATIONS -->
+
+                <div class="ai-result-card">
+
+                    <h3>
+                        Recommendations
+                    </h3>
+
+                    <ul id="aiRecommendations"></ul>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- DISCLAIMER -->
+
+            <div class="ai-disclaimer-box">
+
+                ⚠
+
+                <span id="aiDisclaimer"></span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ERROR -->
+
+        <div
+            id="analysisError"
+            class="analysis-error"
+        ></div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         STATUS
+    ====================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    06
+                </div>
+
+                <div>
+
+                    <h2>
+                        Case Status
+                    </h2>
+
+                    <p>
+                        Update the workflow state of this case.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="status-panel">
+
+            <form
+                method="POST"
+                action="{{ url_for('update_case_status', case_id=case.id) }}"
+                id="statusForm"
+            >
+
+                <div class="status-form">
+
+                    <div class="clinical-field">
+
+                        <label>
+                            CASE STATUS
+                        </label>
+
+                        <select name="status">
+
+                            <option
+                                value="New"
+                                {% if case.status == "New" %}selected{% endif %}
+                            >
+                                New
+                            </option>
+
+                            <option
+                                value="Active"
+                                {% if case.status == "Active" %}selected{% endif %}
+                            >
+                                Active
+                            </option>
+
+                            <option
+                                value="Completed"
+                                {% if case.status == "Completed" %}selected{% endif %}
+                            >
+                                Completed
+                            </option>
+
+                            <option
+                                value="Archived"
+                                {% if case.status == "Archived" %}selected{% endif %}
+                            >
+                                Archived
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="secondary-action"
+                    >
+                        Update Status
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DELETE
+    ====================================================== -->
+
+    <section class="clinical-bottom-actions">
+
+        <a
+            href="{{ url_for('clinical_cases') }}"
+            class="cancel-button"
+        >
+            ← Back to Cases
+        </a>
+
+
+        <button
+            type="button"
+            class="delete-case-button"
+            id="openDeleteModal"
+        >
+            Delete Case
+        </button>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="clinical-footer">
+
+        <span>
+            ELORA MEDAI v0.1
+        </span>
+
+        <span>
+            Clinical decision-support prototype
+        </span>
+
+        <span>
+            SECURE · AI-ASSISTED · HUMAN VERIFIED
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     DELETE MODAL
+========================================================= -->
+
+<div
+    class="delete-modal"
+    id="deleteModal"
+>
+
+    <div class="delete-modal-card">
+
+        <h3>
+            Delete Clinical Case?
+        </h3>
+
+
+        <p>
+
+            This will permanently remove case
+
+            <strong>
+                #{{ case.case_id }}
+            </strong>
+
+            and its associated clinical record.
+
+            This action cannot be undone.
+
+        </p>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-cancel"
+                id="cancelDelete"
+            >
+                Cancel
+            </button>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('delete_case', case_id=case.id) }}"
+            >
+
+                <button
+                    type="submit"
+                    class="modal-delete"
+                >
+                    Permanently Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="eloraToast"
+    class="elora-toast"
+></div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           ELEMENTS
+        ===================================================== */
+
+        const runAIButton =
+            document.getElementById(
+                "runAIButton"
+            );
+
+
+        const runAIButtonCenter =
+            document.getElementById(
+                "runAIButtonCenter"
+            );
+
+
+        const rerunAnalysisButton =
+            document.getElementById(
+                "rerunAnalysisButton"
+            );
+
+
+        const copyAnalysisButton =
+            document.getElementById(
+                "copyAnalysisButton"
+            );
+
+
+        const aiPanel =
+            document.getElementById(
+                "aiPanel"
+            );
+
+
+        const aiReadyState =
+            document.getElementById(
+                "aiReadyState"
+            );
+
+
+        const aiProcessing =
+            document.getElementById(
+                "aiProcessing"
+            );
+
+
+        const aiResults =
+            document.getElementById(
+                "aiResults"
+            );
+
+
+        const aiStatus =
+            document.getElementById(
+                "aiStatus"
+            );
+
+
+        const aiMessage =
+            document.getElementById(
+                "aiMessage"
+            );
+
+
+        const aiRisk =
+            document.getElementById(
+                "aiRisk"
+            );
+
+
+        const aiConfidence =
+            document.getElementById(
+                "aiConfidence"
+            );
+
+
+        const aiSummary =
+            document.getElementById(
+                "aiSummary"
+            );
+
+
+        const aiFindings =
+            document.getElementById(
+                "aiFindings"
+            );
+
+
+        const aiRisks =
+            document.getElementById(
+                "aiRisks"
+            );
+
+
+        const aiDifferential =
+            document.getElementById(
+                "aiDifferential"
+            );
+
+
+        const aiRecommendations =
+            document.getElementById(
+                "aiRecommendations"
+            );
+
+
+        const aiDisclaimer =
+            document.getElementById(
+                "aiDisclaimer"
+            );
+
+
+        const analysisEngine =
+            document.getElementById(
+                "analysisEngine"
+            );
+
+
+        const analysisTimestamp =
+            document.getElementById(
+                "analysisTimestamp"
+            );
+
+
+        const analysisError =
+            document.getElementById(
+                "analysisError"
+            );
+
+
+        const processingProgress =
+            document.getElementById(
+                "processingProgress"
+            );
+
+
+        const processingPercent =
+            document.getElementById(
+                "processingPercent"
+            );
+
+
+        const processingSteps =
+            document.querySelectorAll(
+                ".processing-step"
+            );
+
+
+        const toast =
+            document.getElementById(
+                "eloraToast"
+            );
+
+
+        const deleteModal =
+            document.getElementById(
+                "deleteModal"
+            );
+
+
+        const openDeleteModal =
+            document.getElementById(
+                "openDeleteModal"
+            );
+
+
+        const cancelDelete =
+            document.getElementById(
+                "cancelDelete"
+            );
+
+
+        const printReportButton =
+            document.getElementById(
+                "printReportButton"
+            );
+
+
+        let latestAnalysis = null;
+
+        let processingTimer = null;
+
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        function showToast(
+            message,
+            type = "success"
+        ) {
+
+            toast.textContent =
+                message;
+
+            toast.className =
+                "elora-toast " +
+                type +
+                " show";
+
+
+            setTimeout(
+                function () {
+
+                    toast.classList.remove(
+                        "show"
+                    );
+
+                },
+                3000
+            );
+
+        }
+
+
+
+        /* =====================================================
+           PROCESSING ANIMATION
+        ===================================================== */
+
+        function startProcessingAnimation() {
+
+            let progress = 0;
+
+            let currentStep = 0;
+
+
+            aiProcessing.classList.add(
+                "active"
+            );
+
+
+            processingProgress.style.width =
+                "0%";
+
+
+            processingPercent.textContent =
+                "0%";
+
+
+            processingSteps.forEach(
+                function (step) {
+
+                    step.classList.remove(
+                        "active",
+                        "complete"
+                    );
+
+                }
+            );
+
+
+            processingTimer =
+                setInterval(
+                    function () {
+
+                        progress +=
+                            Math.floor(
+                                Math.random() * 9
+                            ) + 4;
+
+
+                        if (progress >= 94) {
+
+                            progress = 94;
+
+                        }
+
+
+                        processingProgress.style.width =
+                            progress + "%";
+
+
+                        processingPercent.textContent =
+                            progress + "%";
+
+
+                        const targetStep =
+                            Math.min(
+                                4,
+                                Math.floor(
+                                    progress / 25
+                                ) + 1
+                            );
+
+
+                        if (
+                            targetStep !==
+                            currentStep
+                        ) {
+
+                            currentStep =
+                                targetStep;
+
+
+                            processingSteps.forEach(
+                                function (
+                                    step,
+                                    index
+                                ) {
+
+                                    const stepNumber =
+                                        index + 1;
+
+
+                                    if (
+                                        stepNumber <
+                                        targetStep
+                                    ) {
+
+                                        step.classList.remove(
+                                            "active"
+                                        );
+
+                                        step.classList.add(
+                                            "complete"
+                                        );
+
+                                    }
+
+
+                                    if (
+                                        stepNumber ===
+                                        targetStep
+                                    ) {
+
+                                        step.classList.add(
+                                            "active"
+                                        );
+
+                                    }
+
+                                }
+                            );
+
+                        }
+
+                    },
+                    450
+                );
+
+        }
+
+
+
+        function finishProcessingAnimation() {
+
+            if (processingTimer) {
+
+                clearInterval(
+                    processingTimer
+                );
+
+                processingTimer = null;
+
+            }
+
+
+            processingProgress.style.width =
+                "100%";
+
+
+            processingPercent.textContent =
+                "100%";
+
+
+            processingSteps.forEach(
+                function (step) {
+
+                    step.classList.remove(
+                        "active"
+                    );
+
+                    step.classList.add(
+                        "complete"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RESET UI
+        ===================================================== */
+
+        function resetAnalysisUI() {
+
+            aiReadyState.style.display =
+                "block";
+
+
+            aiResults.style.display =
+                "none";
+
+
+            analysisError.style.display =
+                "none";
+
+
+            aiProcessing.classList.remove(
+                "active"
+            );
+
+
+            aiStatus.textContent =
+                "Ready for analysis";
+
+
+            aiMessage.textContent =
+                "ELORA will evaluate the submitted clinical information using its clinical decision-support engine.";
+
+        }
+
+
+
+        /* =====================================================
+           SET BUTTON STATE
+        ===================================================== */
+
+        function setAnalyzingState(
+            analyzing
+        ) {
+
+            runAIButton.disabled =
+                analyzing;
+
+
+            runAIButtonCenter.disabled =
+                analyzing;
+
+
+            if (analyzing) {
+
+                runAIButton.textContent =
+                    "✦ AI ANALYZING...";
+
+
+                runAIButtonCenter.textContent =
+                    "✦ ELORA AI ANALYZING...";
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           RISK COLOR
+        ===================================================== */
+
+        function applyRiskClass(
+            element,
+            risk
+        ) {
+
+            element.classList.remove(
+                "high",
+                "moderate",
+                "low"
+            );
+
+
+            const normalized =
+                String(
+                    risk || ""
+                ).toLowerCase();
+
+
+            if (
+                normalized ===
+                "high"
+            ) {
+
+                element.classList.add(
+                    "high"
+                );
+
+            } else if (
+                normalized ===
+                "moderate"
+            ) {
+
+                element.classList.add(
+                    "moderate"
+                );
+
+            } else if (
+                normalized ===
+                "low"
+            ) {
+
+                element.classList.add(
+                    "low"
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           RENDER FINDINGS
+        ===================================================== */
+
+        function renderFindings(
+            findings
+        ) {
+
+            aiFindings.innerHTML =
+                "";
+
+
+            if (
+                !Array.isArray(
+                    findings
+                ) ||
+                !findings.length
+            ) {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.textContent =
+                    "No automated findings.";
+
+
+                aiFindings.appendChild(
+                    li
+                );
+
+
+                return;
+
+            }
+
+
+            findings.forEach(
+                function (finding) {
+
+                    const li =
+                        document.createElement(
+                            "li"
+                        );
+
+
+                    li.textContent =
+                        finding;
+
+
+                    aiFindings.appendChild(
+                        li
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RENDER RISKS
+        ===================================================== */
+
+        function renderRisks(
+            risks
+        ) {
+
+            aiRisks.innerHTML =
+                "";
+
+
+            if (
+                !Array.isArray(
+                    risks
+                ) ||
+                !risks.length
+            ) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "risk-flag low";
+
+
+                div.textContent =
+                    "No automated risk flags identified.";
+
+
+                aiRisks.appendChild(
+                    div
+                );
+
+
+                return;
+
+            }
+
+
+            risks.forEach(
+                function (flag) {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    const level =
+                        String(
+                            flag.level ||
+                            "INFO"
+                        ).toLowerCase();
+
+
+                    div.className =
+                        "risk-flag " +
+                        level;
+
+
+                    const title =
+                        document.createElement(
+                            "strong"
+                        );
+
+
+                    title.textContent =
+                        (
+                            flag.level ||
+                            "INFO"
+                        ) +
+                        " — " +
+                        (
+                            flag.title ||
+                            "Clinical flag"
+                        );
+
+
+                    const detail =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    detail.textContent =
+                        flag.detail ||
+                        "";
+
+
+                    div.appendChild(
+                        title
+                    );
+
+
+                    div.appendChild(
+                        detail
+                    );
+
+
+                    aiRisks.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RENDER DIFFERENTIAL
+        ===================================================== */
+
+        function renderDifferential(
+            differential
+        ) {
+
+            aiDifferential.innerHTML =
+                "";
+
+
+            if (
+                !Array.isArray(
+                    differential
+                ) ||
+                !differential.length
+            ) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "risk-flag";
+
+
+                div.textContent =
+                    "No differential considerations returned.";
+
+
+                aiDifferential.appendChild(
+                    div
+                );
+
+
+                return;
+
+            }
+
+
+            differential.forEach(
+                function (item) {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    div.className =
+                        "risk-flag";
+
+
+                    const title =
+                        document.createElement(
+                            "strong"
+                        );
+
+
+                    title.textContent =
+                        item.condition ||
+                        "Clinical consideration";
+
+
+                    const reason =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    reason.textContent =
+                        item.reason ||
+                        "";
+
+
+                    div.appendChild(
+                        title
+                    );
+
+
+                    div.appendChild(
+                        reason
+                    );
+
+
+                    aiDifferential.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RENDER RECOMMENDATIONS
+        ===================================================== */
+
+        function renderRecommendations(
+            recommendations
+        ) {
+
+            aiRecommendations.innerHTML =
+                "";
+
+
+            if (
+                !Array.isArray(
+                    recommendations
+                ) ||
+                !recommendations.length
+            ) {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.textContent =
+                    "No automated recommendations returned.";
+
+
+                aiRecommendations.appendChild(
+                    li
+                );
+
+
+                return;
+
+            }
+
+
+            recommendations.forEach(
+                function (
+                    recommendation
+                ) {
+
+                    const li =
+                        document.createElement(
+                            "li"
+                        );
+
+
+                    li.textContent =
+                        recommendation;
+
+
+                    aiRecommendations.appendChild(
+                        li
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RENDER ANALYSIS
+        ===================================================== */
+
+        function renderAnalysis(
+            analysis
+        ) {
+
+            latestAnalysis =
+                analysis;
+
+
+            aiRisk.textContent =
+                analysis.risk_level ||
+                "UNKNOWN";
+
+
+            applyRiskClass(
+                aiRisk,
+                analysis.risk_level
+            );
+
+
+            aiConfidence.textContent =
+                analysis.confidence ||
+                "LIMITED";
+
+
+            aiSummary.textContent =
+                analysis.summary ||
+                "No summary available.";
+
+
+            analysisEngine.textContent =
+                analysis.engine ||
+                "ELORA MEDAI";
+
+
+            if (
+                analysis.timestamp
+            ) {
+
+                const date =
+                    new Date(
+                        analysis.timestamp
+                    );
+
+
+                if (
+                    !Number.isNaN(
+                        date.getTime()
+                    )
+                ) {
+
+                    analysisTimestamp.textContent =
+                        "Analysis completed · " +
+                        date.toLocaleString();
+
+                } else {
+
+                    analysisTimestamp.textContent =
+                        "Analysis completed";
+
+                }
+
+            } else {
+
+                analysisTimestamp.textContent =
+                    "Analysis completed";
+
+            }
+
+
+            renderFindings(
+                analysis.findings
+            );
+
+
+            renderRisks(
+                analysis.risk_flags
+            );
+
+
+            renderDifferential(
+                analysis.differential
+            );
+
+
+            renderRecommendations(
+                analysis.recommendations
+            );
+
+
+            aiDisclaimer.textContent =
+                analysis.disclaimer ||
+                "This analysis is a clinical decision-support prototype and must be independently reviewed by a qualified clinician.";
+
+        }
+
+
+
+        /* =====================================================
+           RUN ANALYSIS
+        ===================================================== */
+
+        async function runAnalysis() {
+
+            setAnalyzingState(
+                true
+            );
+
+
+            resetAnalysisUI();
+
+
+            aiReadyState.style.display =
+                "block";
+
+
+            aiStatus.textContent =
+                "Initializing ELORA intelligence";
+
+
+            aiMessage.textContent =
+                "Connecting to the clinical analysis engine...";
+
+
+            startProcessingAnimation();
+
+
+            await new Promise(
+                function (resolve) {
+
+                    setTimeout(
+                        resolve,
+                        500
+                    );
+
+                }
+            );
+
+
+            aiReadyState.style.display =
+                "none";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{{ url_for('analyze_case_api', case_id=case.id) }}",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json",
+
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+                            }
+                        }
+                    );
+
+
+                let data = null;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch (
+                    jsonError
+                ) {
+
+                    throw new Error(
+                        "The ELORA server returned an invalid response."
+                    );
+
+                }
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.error ||
+                        "ELORA AI analysis failed."
+                    );
+
+                }
+
+
+                finishProcessingAnimation();
+
+
+                await new Promise(
+                    function (resolve) {
+
+                        setTimeout(
+                            resolve,
+                            350
+                        );
+
+                    }
+                );
+
+
+                renderAnalysis(
+                    data.analysis
+                );
+
+
+                aiProcessing.classList.remove(
+                    "active"
+                );
+
+
+                aiResults.style.display =
+                    "block";
+
+
+                setAnalyzingState(
+                    false
+                );
+
+
+                runAIButton.textContent =
+                    "✓ Analysis Complete";
+
+
+                runAIButtonCenter.textContent =
+                    "↻ Run Analysis Again";
+
+
+                showToast(
+                    "ELORA clinical analysis completed.",
+                    "success"
+                );
+
+
+                aiPanel.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    "ELORA AI ERROR:",
+                    error
+                );
+
+
+                if (processingTimer) {
+
+                    clearInterval(
+                        processingTimer
+                    );
+
+                    processingTimer =
+                        null;
+
+                }
+
+
+                aiProcessing.classList.remove(
+                    "active"
+                );
+
+
+                analysisError.textContent =
+                    "ELORA AI ERROR: " +
+                    (
+                        error.message ||
+                        "Unable to complete analysis."
+                    );
+
+
+                analysisError.style.display =
+                    "block";
+
+
+                aiReadyState.style.display =
+                    "block";
+
+
+                aiStatus.textContent =
+                    "Analysis failed";
+
+
+                aiMessage.textContent =
+                    "ELORA could not complete the clinical analysis. Please verify the connection and try again.";
+
+
+                setAnalyzingState(
+                    false
+                );
+
+
+                runAIButton.textContent =
+                    "✦ Analyze with ELORA AI";
+
+
+                runAIButtonCenter.textContent =
+                    "✦ Run ELORA Clinical Analysis";
+
+
+                showToast(
+                    "ELORA analysis failed.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           COPY ANALYSIS
+        ===================================================== */
+
+        async function copyAnalysis() {
+
+            if (
+                !latestAnalysis
+            ) {
+
+                showToast(
+                    "Run an analysis first.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            let text =
+                "";
+
+
+            text +=
+                "ELORA MEDAI CLINICAL ANALYSIS\n";
+
+            text +=
+                "================================\n\n";
+
+
+            text +=
+                "Case: {{ case.case_id }}\n";
+
+            text +=
+                "Patient: {{ patient.full_name }}\n\n";
+
+
+            text +=
+                "OVERALL RISK: " +
+                (
+                    latestAnalysis.risk_level ||
+                    "UNKNOWN"
+                ) +
+                "\n";
+
+
+            text +=
+                "CONFIDENCE: " +
+                (
+                    latestAnalysis.confidence ||
+                    "LIMITED"
+                ) +
+                "\n\n";
+
+
+            text +=
+                "CLINICAL SUMMARY\n";
+
+            text +=
+                (
+                    latestAnalysis.summary ||
+                    "N/A"
+                ) +
+                "\n\n";
+
+
+            text +=
+                "FINDINGS\n";
+
+
+            (
+                latestAnalysis.findings ||
+                []
+            ).forEach(
+                function (item) {
+
+                    text +=
+                        "• " +
+                        item +
+                        "\n";
+
+                }
+            );
+
+
+            text +=
+                "\nRISK FLAGS\n";
+
+
+            (
+                latestAnalysis.risk_flags ||
+                []
+            ).forEach(
+                function (flag) {
+
+                    text +=
+                        "• " +
+                        (
+                            flag.level ||
+                            ""
+                        ) +
+                        " — " +
+                        (
+                            flag.title ||
+                            ""
+                        ) +
+                        ": " +
+                        (
+                            flag.detail ||
+                            ""
+                        ) +
+                        "\n";
+
+                }
+            );
+
+
+            text +=
+                "\nRECOMMENDATIONS\n";
+
+
+            (
+                latestAnalysis.recommendations ||
+                []
+            ).forEach(
+                function (item) {
+
+                    text +=
+                        "• " +
+                        item +
+                        "\n";
+
+                }
+            );
+
+
+            text +=
+                "\nDISCLAIMER\n";
+
+            text +=
+                (
+                    latestAnalysis.disclaimer ||
+                    ""
+                );
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+
+                showToast(
+                    "Clinical analysis copied to clipboard.",
+                    "success"
+                );
+
+            } catch (
+                error
+            ) {
+
+                showToast(
+                    "Unable to copy analysis.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           BUTTON EVENTS
+        ===================================================== */
+
+        runAIButton.addEventListener(
+            "click",
+            runAnalysis
+        );
+
+
+        runAIButtonCenter.addEventListener(
+            "click",
+            runAnalysis
+        );
+
+
+        rerunAnalysisButton.addEventListener(
+            "click",
+            runAnalysis
+        );
+
+
+        copyAnalysisButton.addEventListener(
+            "click",
+            copyAnalysis
+        );
+
+
+        printReportButton.addEventListener(
+            "click",
+            function () {
+
+                window.print();
+
+            }
+        );
+
+
+
+        /* =====================================================
+           DELETE MODAL
+        ===================================================== */
+
+        openDeleteModal.addEventListener(
+            "click",
+            function () {
+
+                deleteModal.classList.add(
+                    "active"
+                );
+
+            }
+        );
+
+
+        cancelDelete.addEventListener(
+            "click",
+            function () {
+
+                deleteModal.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+        deleteModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    deleteModal
+                ) {
+
+                    deleteModal.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    deleteModal.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           STATUS AJAX
+        ===================================================== */
+
+        const statusForm =
+            document.getElementById(
+                "statusForm"
+            );
+
+
+        if (statusForm) {
+
+            statusForm.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const formData =
+                        new FormData(
+                            statusForm
+                        );
+
+
+                    const submitButton =
+                        statusForm.querySelector(
+                            "button[type='submit']"
+                        );
+
+
+                    const originalText =
+                        submitButton.textContent;
+
+
+                    submitButton.disabled =
+                        true;
+
+
+                    submitButton.textContent =
+                        "Updating...";
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                statusForm.action,
+                                {
+                                    method: "POST",
+
+                                    body: formData,
+
+                                    headers: {
+                                        "X-Requested-With":
+                                            "XMLHttpRequest"
+                                    }
+                                }
+                            );
+
+
+                        const data =
+                            await response.json();
+
+
+                        if (
+                            !response.ok ||
+                            !data.success
+                        ) {
+
+                            throw new Error(
+                                data.error ||
+                                "Unable to update status."
+                            );
+
+                        }
+
+
+                        showToast(
+                            "Case status updated successfully.",
+                            "success"
+                        );
+
+
+                        setTimeout(
+                            function () {
+
+                                window.location.reload();
+
+                            },
+                            700
+                        );
+
+
+                    } catch (
+                        error
+                    ) {
+
+                        showToast(
+                            error.message ||
+                            "Unable to update status.",
+                            "error"
+                        );
+
+
+                        submitButton.disabled =
+                            false;
+
+
+                        submitButton.textContent =
+                            originalText;
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           INITIAL STATE
+        ===================================================== */
+
+        resetAnalysisUI();
+
+
+    }
+
+);
+
+</script>
+
+
+</body>
+
+</html>

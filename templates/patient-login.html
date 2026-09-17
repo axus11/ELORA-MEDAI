@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Patient Portal</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/patient-login.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <div class="background-grid"></div>
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+    <main class="login-wrapper">
+
+        <section class="login-card">
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-mark">
+                    E
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        ELORA
+                    </strong>
+
+                    <span>
+                        MEDAI
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                PATIENT PORTAL ONLINE
+
+            </div>
+
+
+            <!-- HEADER -->
+
+            <div class="login-header">
+
+                <span class="eyebrow">
+                    SECURE ACCESS
+                </span>
+
+                <h1>
+                    Patient Portal
+                </h1>
+
+                <p>
+                    Access your healthcare communication
+                    and securely connect with your clinical team.
+                </p>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            {% if error %}
+
+            <div class="error-message">
+
+                <span>!</span>
+
+                <div>
+                    {{ error }}
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                method="POST"
+                action="{{ url_for('patient_login') }}"
+            >
+
+                <div class="form-group">
+
+                    <label for="login">
+                        PATIENT ID OR EMAIL
+                    </label>
+
+                    <input
+                        type="text"
+                        id="login"
+                        name="login"
+                        placeholder="EL-XXXXXXXX or email"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        PASSWORD
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+
+                    <span>
+                        ACCESS PATIENT PORTAL
+                    </span>
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <!-- SECURITY -->
+
+            <div class="security-note">
+
+                <span class="lock-icon">
+                    🔒
+                </span>
+
+                <span>
+                    Your connection is protected.
+                    Patient information is kept private.
+                </span>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <div class="login-footer">
+
+                <span>
+                    ELORA MEDAI
+                </span>
+
+                <span>
+                    Clinical Communication Portal
+                </span>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

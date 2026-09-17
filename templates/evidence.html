@@ -1,0 +1,2518 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        ELORA MEDAI | Evidence Intelligence
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/evidence.css') }}"
+    >
+
+</head>
+
+
+<body class="clinical-page evidence-page">
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="clinical-sidebar">
+
+    <div class="clinical-brand">
+
+        <div class="clinical-logo">
+            E
+        </div>
+
+        <div>
+            <strong>ELORA</strong>
+            <span>MEDAI</span>
+        </div>
+
+    </div>
+
+
+    <div class="clinical-system">
+
+        <span></span>
+
+        EVIDENCE ENGINE ONLINE
+
+    </div>
+
+
+    <nav class="clinical-nav">
+
+        <a href="{{ url_for('dashboard') }}">
+
+            <span>⌂</span>
+
+            Dashboard
+
+        </a>
+
+
+        <a href="{{ url_for('patients') }}">
+
+            <span>♙</span>
+
+            Patients
+
+        </a>
+
+
+        <a href="{{ url_for('clinical_cases') }}">
+
+            <span>◈</span>
+
+            Clinical Cases
+
+        </a>
+
+
+        <a
+            href="{{ url_for('evidence') }}"
+            class="active"
+        >
+
+            <span>⌁</span>
+
+            Evidence
+
+        </a>
+
+
+        <div class="clinical-divider"></div>
+
+
+   
+
+<a href="{{ url_for('settings') }}" class="nav-item">
+            <span>⚙</span>
+
+            Settings
+
+        </a>
+
+
+    <div class="clinical-sidebar-bottom">
+
+        <div class="clinical-user">
+
+            <div class="clinical-avatar">
+
+                {{ doctor_initials }}
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ doctor_name }}
+                </strong>
+
+                <small>
+                    Medical Staff
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-link"
+        >
+
+            ↪ Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="clinical-main">
+
+
+    <!-- HEADER -->
+
+    <header class="clinical-header">
+
+        <div>
+
+            <div class="breadcrumb">
+
+                ELORA MEDAI
+
+                <span>/</span>
+
+                Evidence Intelligence
+
+            </div>
+
+
+            <h1>
+                Evidence Intelligence
+            </h1>
+
+
+            <p>
+
+                Search biomedical literature, review
+                clinical evidence and connect relevant
+                research directly to patient cases.
+
+            </p>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <div class="secure-status">
+
+                <span></span>
+
+                SECURE SESSION
+
+            </div>
+
+
+            <div class="doctor-header">
+
+                <div class="clinical-avatar">
+
+                    {{ doctor_initials }}
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name }}
+                    </strong>
+
+                    <small>
+                        Clinical Staff
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CASE CONNECTION
+    ====================================================== -->
+
+    <section class="evidence-case-bar">
+
+        <div class="case-context">
+
+            <div class="case-context-icon">
+                ◈
+            </div>
+
+
+            <div>
+
+                <span>
+                    ACTIVE CLINICAL CASE
+                </span>
+
+                <strong id="activeCaseName">
+                    No case selected
+                </strong>
+
+                <small id="activeCaseMeta">
+                    Evidence can be linked to a clinical case.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="case-selector-wrap">
+
+            <label for="caseSelector">
+                LINK EVIDENCE TO
+            </label>
+
+
+            <select id="caseSelector">
+
+                <option value="">
+                    General Evidence Workspace
+                </option>
+
+
+                {% for case in cases %}
+
+                    <option
+                        value="{{ case.id }}"
+                        data-case-code="{{ case.case_id }}"
+                        data-patient="{{ case.patient.full_name }}"
+                    >
+
+                        {{ case.case_id }}
+                        —
+                        {{ case.patient.full_name }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SEARCH COMMAND CENTER
+    ====================================================== -->
+
+    <section class="evidence-command">
+
+        <div class="command-header">
+
+            <div class="command-identity">
+
+                <div class="evidence-core">
+                    E
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        ELORA EVIDENCE CORE
+                    </strong>
+
+                    <small>
+                        PubMed clinical literature retrieval
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="engine-status"
+                id="engineStatus"
+            >
+
+                <span></span>
+
+                READY
+
+            </div>
+
+        </div>
+
+
+        <form
+            id="evidenceSearchForm"
+            class="evidence-search"
+        >
+
+            <div class="search-icon">
+                ⌕
+            </div>
+
+
+            <input
+                type="text"
+                id="searchInput"
+                name="q"
+                autocomplete="off"
+                placeholder="Search clinical evidence... e.g. pneumonia oxygen saturation adults"
+            >
+
+
+            <button
+                type="submit"
+                id="searchButton"
+            >
+
+                <span>
+                    SEARCH PUBMED
+                </span>
+
+                <strong>
+                    →
+                </strong>
+
+            </button>
+
+        </form>
+
+
+        <div class="search-hints">
+
+            <span>Suggested:</span>
+
+            <button
+                type="button"
+                data-query="hypertension clinical management adults"
+            >
+                Hypertension
+            </button>
+
+            <button
+                type="button"
+                data-query="pneumonia adults clinical diagnosis"
+            >
+                Pneumonia
+            </button>
+
+            <button
+                type="button"
+                data-query="chest pain cardiovascular assessment"
+            >
+                Chest pain
+            </button>
+
+            <button
+                type="button"
+                data-query="fever infectious disease adults"
+            >
+                Fever
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         WORKSPACE
+    ====================================================== -->
+
+    <section class="evidence-workspace">
+
+
+        <!-- RESULTS -->
+
+        <div class="evidence-results-panel">
+
+            <div class="results-toolbar">
+
+                <div>
+
+                    <span class="section-code">
+                        EVIDENCE INDEX
+                    </span>
+
+                    <h2>
+                        Research Results
+                    </h2>
+
+                </div>
+
+
+                <div class="results-count">
+
+                    <strong id="resultCount">
+                        0
+                    </strong>
+
+                    <span>
+                        RECORDS
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="results"
+                class="evidence-results"
+            >
+
+                <div class="evidence-empty">
+
+                    <div class="empty-core">
+                        E
+                    </div>
+
+                    <strong>
+                        Awaiting evidence query
+                    </strong>
+
+                    <p>
+                        Search PubMed to retrieve biomedical
+                        literature relevant to your clinical workflow.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SIDE PANEL -->
+
+        <aside class="evidence-side">
+
+
+            <!-- WORKSPACE STATS -->
+
+            <div class="evidence-side-card">
+
+                <div class="side-card-title">
+
+                    <span>
+                        WORKSPACE
+                    </span>
+
+                    <i></i>
+
+                </div>
+
+
+                <div class="evidence-stat">
+
+                    <span>
+                        Retrieved
+                    </span>
+
+                    <strong id="statRetrieved">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="evidence-stat">
+
+                    <span>
+                        Saved
+                    </span>
+
+                    <strong id="statSaved">
+                        {{ evidence_count }}
+                    </strong>
+
+                </div>
+
+
+                <div class="evidence-stat">
+
+                    <span>
+                        Linked to Case
+                    </span>
+
+                    <strong id="statLinked">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="evidence-stat">
+
+                    <span>
+                        Last Query
+                    </span>
+
+                    <strong
+                        id="statQuery"
+                        class="stat-query"
+                    >
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CASE STATUS -->
+
+            <div class="evidence-side-card">
+
+                <div class="side-card-title">
+
+                    <span>
+                        CASE CONNECTION
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="case-status-panel"
+                    id="caseStatusPanel"
+                >
+
+                    <div class="case-status-orbit">
+                        ◈
+                    </div>
+
+                    <strong>
+                        No case selected
+                    </strong>
+
+                    <p>
+                        Select a clinical case above to
+                        automatically link research to it.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- WORKFLOW -->
+
+            <div class="evidence-side-card">
+
+                <div class="side-card-title">
+
+                    <span>
+                        CLINICAL WORKFLOW
+                    </span>
+
+                </div>
+
+
+                <div class="workflow-step active">
+
+                    <span>
+                        01
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Search
+                        </strong>
+
+                        <small>
+                            Retrieve literature
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="workflow-step">
+
+                    <span>
+                        02
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Appraise
+                        </strong>
+
+                        <small>
+                            Review source quality
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="workflow-step">
+
+                    <span>
+                        03
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Correlate
+                        </strong>
+
+                        <small>
+                            Connect to the case
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="workflow-step">
+
+                    <span>
+                        04
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            Verify
+                        </strong>
+
+                        <small>
+                            Clinician review
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </aside>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="clinical-footer">
+
+        <span>
+            ELORA MEDAI v0.2
+        </span>
+
+        <span>
+            EVIDENCE INTELLIGENCE WORKSPACE
+        </span>
+
+        <span>
+            SECURE · SOURCE-AWARE · HUMAN VERIFIED
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- =========================================================
+     ARTICLE MODAL
+========================================================= -->
+
+<div
+    class="evidence-modal"
+    id="evidenceModal"
+>
+
+    <div class="evidence-modal-box">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-label">
+                    PUBMED EVIDENCE RECORD
+                </span>
+
+                <h2 id="modalTitle">
+                    Evidence Article
+                </h2>
+
+                <div
+                    class="modal-meta"
+                    id="modalMeta"
+                >
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close"
+                id="modalClose"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <div class="modal-body">
+
+
+            <section class="modal-section">
+
+                <span>
+                    ABSTRACT
+                </span>
+
+                <p id="modalAbstract">
+                </p>
+
+            </section>
+
+
+            <section class="modal-section">
+
+                <span>
+                    PUBLICATION TYPE
+                </span>
+
+                <div
+                    id="modalTypes"
+                    class="modal-tags"
+                >
+                </div>
+
+            </section>
+
+
+            <section class="modal-section">
+
+                <span>
+                    CLINICAL ACTION
+                </span>
+
+                <p class="modal-note">
+
+                    Evidence retrieved from PubMed should
+                    be independently reviewed by a qualified
+                    clinician before being used for patient care.
+
+                </p>
+
+            </section>
+
+        </div>
+
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="modal-secondary"
+                id="modalCancel"
+            >
+                Close
+            </button>
+
+
+            <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                id="modalSource"
+                class="modal-source"
+            >
+                Open PubMed ↗
+            </a>
+
+
+            <button
+                type="button"
+                id="modalSave"
+                class="modal-save"
+            >
+                Save to Case
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="evidenceToast"
+    class="evidence-toast"
+>
+</div>
+
+
+
+<script
+  
+>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
+    const form =
+        document.getElementById("evidenceSearchForm");
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    const searchButton =
+        document.getElementById("searchButton");
+
+    const results =
+        document.getElementById("results");
+
+    const resultCount =
+        document.getElementById("resultCount");
+
+    const statRetrieved =
+        document.getElementById("statRetrieved");
+
+    const statSaved =
+        document.getElementById("statSaved");
+
+    const statLinked =
+        document.getElementById("statLinked");
+
+    const statQuery =
+        document.getElementById("statQuery");
+
+    const engineStatus =
+        document.getElementById("engineStatus");
+
+    const caseSelector =
+        document.getElementById("caseSelector");
+
+    const activeCaseName =
+        document.getElementById("activeCaseName");
+
+    const activeCaseMeta =
+        document.getElementById("activeCaseMeta");
+
+    const caseStatusPanel =
+        document.getElementById("caseStatusPanel");
+
+    const modal =
+        document.getElementById("evidenceModal");
+
+    const modalClose =
+        document.getElementById("modalClose");
+
+    const modalCancel =
+        document.getElementById("modalCancel");
+
+    const modalTitle =
+        document.getElementById("modalTitle");
+
+    const modalMeta =
+        document.getElementById("modalMeta");
+
+    const modalAbstract =
+        document.getElementById("modalAbstract");
+
+    const modalTypes =
+        document.getElementById("modalTypes");
+
+    const modalSource =
+        document.getElementById("modalSource");
+
+    const modalSave =
+        document.getElementById("modalSave");
+
+    const toastElement =
+        document.getElementById("evidenceToast");
+
+
+    /* =====================================================
+       STATE
+    ===================================================== */
+
+    let searchResults = [];
+
+    let currentArticle = null;
+
+    let savedEvidenceIds = new Set();
+
+    let caseEvidenceIds = new Set();
+
+    let currentCaseId = null;
+
+
+    /* =====================================================
+       INITIAL CASE
+       Supports:
+
+       /evidence
+       /evidence?case_id=12
+    ===================================================== */
+
+    const urlParams =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const queryCaseId =
+        urlParams.get("case_id");
+
+
+    if (queryCaseId) {
+
+        const option =
+            caseSelector.querySelector(
+                `option[value="${queryCaseId}"]`
+            );
+
+        if (option) {
+
+            caseSelector.value =
+                queryCaseId;
+
+            setActiveCase(
+                queryCaseId,
+                false
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function escapeHTML(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    function showToast(message) {
+
+        toastElement.textContent =
+            message;
+
+        toastElement.classList.add(
+            "show"
+        );
+
+        clearTimeout(
+            window.__eloraEvidenceToast
+        );
+
+        window.__eloraEvidenceToast =
+            setTimeout(() => {
+
+                toastElement.classList.remove(
+                    "show"
+                );
+
+            }, 3000);
+
+    }
+
+
+    function setEngineStatus(
+        text,
+        state = "ready"
+    ) {
+
+        const colors = {
+
+            ready:
+                "var(--green)",
+
+            searching:
+                "var(--yellow)",
+
+            saving:
+                "var(--cyan)",
+
+            error:
+                "var(--red)"
+
+        };
+
+        engineStatus.innerHTML = `
+            <span></span>
+            ${escapeHTML(text)}
+        `;
+
+        engineStatus.style.color =
+            colors[state] ||
+            colors.ready;
+
+    }
+
+
+    function normalizeArticle(
+        item
+    ) {
+
+        const authors =
+            Array.isArray(item.authors)
+                ? item.authors.join(", ")
+                : (
+                    item.authors || ""
+                );
+
+        const types =
+            Array.isArray(item.article_type)
+                ? item.article_type
+                : [];
+
+        const publicationDate =
+            item.publication_date ||
+            "";
+
+        let year = "";
+
+        const yearMatch =
+            String(
+                publicationDate
+            ).match(
+                /\b(19|20)\d{2}\b/
+            );
+
+        if (yearMatch) {
+
+            year =
+                yearMatch[0];
+
+        }
+
+
+        return {
+
+            ...item,
+
+            id:
+                String(
+                    item.pmid ||
+                    item.id ||
+                    crypto.randomUUID()
+                ),
+
+            authors,
+
+            articleTypes:
+                types,
+
+            year,
+
+            abstract:
+                item.abstract ||
+                "No abstract was supplied by PubMed.",
+
+            title:
+                item.title ||
+                "Untitled article",
+
+            journal:
+                item.journal ||
+                "Journal not specified",
+
+            url:
+                item.url ||
+                (
+                    item.pmid
+                        ? `https://pubmed.ncbi.nlm.nih.gov/${item.pmid}/`
+                        : "#"
+                )
+
+        };
+
+    }
+
+
+    /* =====================================================
+       CASE SELECTION
+    ===================================================== */
+
+    async function setActiveCase(
+        caseId,
+        updateURL = true
+    ) {
+
+        currentCaseId =
+            caseId
+                ? String(caseId)
+                : null;
+
+
+        if (
+            updateURL
+        ) {
+
+            const url =
+                new URL(
+                    window.location.href
+                );
+
+            if (currentCaseId) {
+
+                url.searchParams.set(
+                    "case_id",
+                    currentCaseId
+                );
+
+            } else {
+
+                url.searchParams.delete(
+                    "case_id"
+                );
+
+            }
+
+            window.history.replaceState(
+                {},
+                "",
+                url
+            );
+
+        }
+
+
+        const selected =
+            caseSelector.options[
+                caseSelector.selectedIndex
+            ];
+
+
+        if (!currentCaseId) {
+
+            activeCaseName.textContent =
+                "No case selected";
+
+            activeCaseMeta.textContent =
+                "Evidence can be linked to a clinical case.";
+
+            caseStatusPanel.innerHTML = `
+
+                <div class="case-status-orbit">
+                    ◈
+                </div>
+
+                <strong>
+                    No case selected
+                </strong>
+
+                <p>
+                    Select a clinical case above to
+                    automatically link research to it.
+                </p>
+
+            `;
+
+            caseEvidenceIds =
+                new Set();
+
+            statLinked.textContent =
+                "0";
+
+            return;
+
+        }
+
+
+        const caseCode =
+            selected.dataset.caseCode ||
+            currentCaseId;
+
+        const patient =
+            selected.dataset.patient ||
+            "Clinical Patient";
+
+
+        activeCaseName.textContent =
+            `${caseCode}`;
+
+        activeCaseMeta.textContent =
+            `Patient: ${patient}`;
+
+
+        caseStatusPanel.innerHTML = `
+
+            <div class="case-status-orbit">
+                ◈
+            </div>
+
+            <strong>
+                ${escapeHTML(caseCode)}
+            </strong>
+
+            <p>
+                Evidence saved from this workspace
+                will be linked to ${escapeHTML(patient)}.
+            </p>
+
+        `;
+
+
+        await loadCaseEvidence();
+
+    }
+
+
+    caseSelector.addEventListener(
+        "change",
+        () => {
+
+            setActiveCase(
+                caseSelector.value
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       LOAD CASE EVIDENCE
+    ===================================================== */
+
+    async function loadCaseEvidence() {
+
+        if (!currentCaseId) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/evidence?case_id=${encodeURIComponent(
+                        currentCaseId
+                    )}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Unable to load case evidence."
+                );
+
+            }
+
+
+            const linked =
+                Array.isArray(data.evidence)
+                    ? data.evidence
+                    : [];
+
+
+            caseEvidenceIds =
+                new Set(
+                    linked.map(
+                        item =>
+                            String(
+                                item.pmid ||
+                                item.id
+                            )
+                    )
+                );
+
+
+            statLinked.textContent =
+                linked.length;
+
+
+            linked.forEach(
+                item => {
+
+                    savedEvidenceIds.add(
+                        String(
+                            item.pmid ||
+                            item.id
+                        )
+                    );
+
+                }
+            );
+
+
+            updateSaveButtons();
+
+        } catch (error) {
+
+            console.error(
+                "CASE EVIDENCE ERROR:",
+                error
+            );
+
+            showToast(
+                "Unable to load evidence linked to this case."
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+
+    form.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const query =
+                searchInput.value.trim();
+
+
+            if (!query) {
+
+                showToast(
+                    "Enter a clinical evidence query first."
+                );
+
+                searchInput.focus();
+
+                return;
+
+            }
+
+
+            await searchPubMed(
+                query
+            );
+
+        }
+    );
+
+
+    async function searchPubMed(
+        query
+    ) {
+
+        setEngineStatus(
+            "SEARCHING PUBMED",
+            "searching"
+        );
+
+
+        searchButton.disabled =
+            true;
+
+
+        searchButton.querySelector(
+            "span"
+        ).textContent =
+            "SEARCHING...";
+
+
+        statQuery.textContent =
+            query.length > 24
+                ? `${query.slice(0, 24)}…`
+                : query;
+
+
+        results.innerHTML = `
+
+            <div class="evidence-loading">
+
+                CONTACTING PUBMED
+
+            </div>
+
+        `;
+
+
+        try {
+
+            /*
+             * IMPORTANT:
+             *
+             * Flask defines:
+             *
+             * GET /api/evidence/search?q=...&limit=...
+             *
+             * so this intentionally uses GET.
+             */
+
+            const url =
+                `/api/evidence/search?q=${encodeURIComponent(
+                    query
+                )}&limit=15`;
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "PubMed search failed."
+                );
+
+            }
+
+
+            searchResults =
+                Array.isArray(data.results)
+                    ? data.results.map(
+                        normalizeArticle
+                    )
+                    : [];
+
+
+            statRetrieved.textContent =
+                searchResults.length;
+
+
+            setEngineStatus(
+                "PUBMED LINKED",
+                "ready"
+            );
+
+
+            if (!searchResults.length) {
+
+                results.innerHTML = `
+
+                    <div class="evidence-empty">
+
+                        <div class="empty-core">
+                            E
+                        </div>
+
+                        <strong>
+                            No matching evidence found
+                        </strong>
+
+                        <p>
+                            Try a broader clinical query,
+                            different terminology or another
+                            combination of symptoms.
+                        </p>
+
+                    </div>
+
+                `;
+
+                resultCount.textContent =
+                    "0";
+
+                return;
+
+            }
+
+
+            renderResults();
+
+
+            showToast(
+                `${searchResults.length} PubMed records retrieved.`
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "ELORA EVIDENCE SEARCH ERROR:",
+                error
+            );
+
+
+            setEngineStatus(
+                "SERVICE ERROR",
+                "error"
+            );
+
+
+            results.innerHTML = `
+
+                <div class="evidence-empty">
+
+                    <div class="empty-core">
+                        !
+                    </div>
+
+                    <strong>
+                        Evidence service unavailable
+                    </strong>
+
+                    <p>
+                        ${escapeHTML(
+                            error.message ||
+                            "Unable to retrieve PubMed evidence."
+                        )}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            showToast(
+                error.message ||
+                "Unable to retrieve evidence."
+            );
+
+        } finally {
+
+            searchButton.disabled =
+                false;
+
+            searchButton.querySelector(
+                "span"
+            ).textContent =
+                "SEARCH PUBMED";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RENDER RESULTS
+    ===================================================== */
+
+    function renderResults() {
+
+        resultCount.textContent =
+            searchResults.length;
+
+
+        if (!searchResults.length) {
+
+            return;
+
+        }
+
+
+        results.innerHTML =
+            searchResults
+                .map(
+                    article =>
+                        renderArticle(
+                            article
+                        )
+                )
+                .join("");
+
+
+        bindResultActions();
+
+    }
+
+
+    function renderArticle(
+        article
+    ) {
+
+        const id =
+            String(
+                article.pmid ||
+                article.id
+            );
+
+
+        const saved =
+            savedEvidenceIds.has(
+                id
+            );
+
+
+        const linked =
+            caseEvidenceIds.has(
+                id
+            );
+
+
+        const saveLabel =
+            linked
+                ? "✓ LINKED TO CASE"
+                : saved
+                    ? "✓ SAVED"
+                    : "SAVE TO WORKSPACE";
+
+
+        const saveClass =
+            linked || saved
+                ? "saved"
+                : "primary";
+
+
+        const abstract =
+            article.abstract ||
+            "No abstract available.";
+
+
+        const shortenedAbstract =
+            abstract.length > 430
+                ? `${abstract.slice(0, 430)}…`
+                : abstract;
+
+
+        const articleTypes =
+            Array.isArray(
+                article.articleTypes
+            )
+                ? article.articleTypes
+                : [];
+
+
+        return `
+
+            <article
+                class="evidence-card ${
+                    linked ? "saved" : ""
+                }"
+                data-evidence-id="${escapeHTML(id)}"
+            >
+
+                <div class="card-top">
+
+                    <div>
+
+                        <div class="card-type">
+
+                            ${escapeHTML(
+                                articleTypes[0] ||
+                                "PUBMED ARTICLE"
+                            )}
+
+                        </div>
+
+
+                        <h3>
+
+                            ${escapeHTML(
+                                article.title
+                            )}
+
+                        </h3>
+
+
+                        <div class="card-meta">
+
+                            ${escapeHTML(
+                                article.authors ||
+                                "Authors not listed"
+                            )}
+
+                            ·
+
+                            ${escapeHTML(
+                                article.journal
+                            )}
+
+                            ·
+
+                            ${escapeHTML(
+                                article.publication_date ||
+                                "Date unavailable"
+                            )}
+
+                        </div>
+
+
+                        ${
+                            article.pmid
+                                ? `
+                                    <div class="card-pmid">
+                                        PMID ${escapeHTML(
+                                            article.pmid
+                                        )}
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                    </div>
+
+
+                    <div class="card-score">
+
+                        <strong>
+                            ${escapeHTML(
+                                articleTypes.length
+                                    ? "SOURCE"
+                                    : "PUBMED"
+                            )}
+                        </strong>
+
+                        <span>
+                            EVIDENCE
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <p class="card-abstract">
+
+                    ${escapeHTML(
+                        shortenedAbstract
+                    )}
+
+                </p>
+
+
+                <div class="card-actions">
+
+                    <button
+                        type="button"
+                        class="evidence-button"
+                        data-view="${escapeHTML(id)}"
+                    >
+                        REVIEW ARTICLE
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="evidence-button ${saveClass}"
+                        data-save="${escapeHTML(id)}"
+                        ${linked ? "disabled" : ""}
+                    >
+                        ${saveLabel}
+                    </button>
+
+
+                    <a
+                        href="${escapeHTML(
+                            article.url
+                        )}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="evidence-button"
+                    >
+                        PUBMED ↗
+                    </a>
+
+                </div>
+
+            </article>
+
+        `;
+
+    }
+
+
+    /* =====================================================
+       RESULT ACTIONS
+    ===================================================== */
+
+    function bindResultActions() {
+
+        document
+            .querySelectorAll(
+                "[data-view]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            const id =
+                                button.dataset.view;
+
+
+                            const article =
+                                searchResults.find(
+                                    item =>
+                                        String(
+                                            item.pmid ||
+                                            item.id
+                                        ) === id
+                                );
+
+
+                            if (article) {
+
+                                openModal(
+                                    article
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                "[data-save]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        async () => {
+
+                            const id =
+                                button.dataset.save;
+
+
+                            const article =
+                                searchResults.find(
+                                    item =>
+                                        String(
+                                            item.pmid ||
+                                            item.id
+                                        ) === id
+                                );
+
+
+                            if (!article) {
+
+                                return;
+
+                            }
+
+
+                            await saveEvidence(
+                                article,
+                                button
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       SAVE EVIDENCE
+    ===================================================== */
+
+    async function saveEvidence(
+        article,
+        button
+    ) {
+
+        if (!currentCaseId) {
+
+            const shouldContinue =
+                confirm(
+                    "No clinical case is selected.\n\n" +
+                    "Save this evidence to your general Evidence workspace?"
+                );
+
+
+            if (!shouldContinue) {
+
+                return;
+
+            }
+
+        }
+
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "SAVING...";
+
+
+        setEngineStatus(
+            "SAVING EVIDENCE",
+            "saving"
+        );
+
+
+        const payload = {
+
+            pmid:
+                article.pmid || "",
+
+            doi:
+                article.doi || "",
+
+            source:
+                article.source ||
+                "PubMed",
+
+            url:
+                article.url || "",
+
+            title:
+                article.title || "",
+
+            abstract:
+                article.abstract || "",
+
+            journal:
+                article.journal || "",
+
+            publication_date:
+                article.publication_date ||
+                "",
+
+            authors:
+                Array.isArray(
+                    article.authors
+                )
+                    ? article.authors
+                    : [],
+
+            article_type:
+                Array.isArray(
+                    article.articleTypes
+                )
+                    ? article.articleTypes
+                    : [],
+
+            notes:
+                "",
+
+            tags:
+                "",
+
+            relevance:
+                "Unreviewed",
+
+            case_id:
+                currentCaseId || null
+
+        };
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/evidence/save",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                payload
+                            )
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Unable to save evidence."
+                );
+
+            }
+
+
+            const saved =
+                data.evidence;
+
+
+            const savedId =
+                String(
+                    saved.pmid ||
+                    saved.id
+                );
+
+
+            savedEvidenceIds.add(
+                savedId
+            );
+
+
+            if (currentCaseId) {
+
+                caseEvidenceIds.add(
+                    savedId
+                );
+
+            }
+
+
+            statSaved.textContent =
+                Number(
+                    statSaved.textContent || 0
+                ) + (
+                    data.duplicate
+                        ? 0
+                        : 1
+                );
+
+
+            statLinked.textContent =
+                caseEvidenceIds.size;
+
+
+            button.textContent =
+                currentCaseId
+                    ? "✓ LINKED TO CASE"
+                    : "✓ SAVED";
+
+
+            button.classList.remove(
+                "primary"
+            );
+
+            button.classList.add(
+                "saved"
+            );
+
+
+            showToast(
+                currentCaseId
+                    ? "Evidence saved and linked to this clinical case."
+                    : "Evidence saved to your workspace."
+            );
+
+
+            setEngineStatus(
+                "EVIDENCE SAVED",
+                "ready"
+            );
+
+
+            if (
+                currentArticle &&
+                String(
+                    currentArticle.pmid ||
+                    currentArticle.id
+                ) ===
+                String(
+                    article.pmid ||
+                    article.id
+                )
+            ) {
+
+                modalSave.textContent =
+                    currentCaseId
+                        ? "✓ Linked to Case"
+                        : "✓ Saved";
+
+            }
+
+
+            await loadCaseEvidence();
+
+
+        } catch (error) {
+
+            console.error(
+                "SAVE EVIDENCE ERROR:",
+                error
+            );
+
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "SAVE TO WORKSPACE";
+
+
+            setEngineStatus(
+                "SAVE ERROR",
+                "error"
+            );
+
+
+            showToast(
+                error.message ||
+                "Unable to save evidence."
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       MODAL
+    ===================================================== */
+
+    function openModal(
+        article
+    ) {
+
+        currentArticle =
+            article;
+
+
+        modalTitle.textContent =
+            article.title ||
+            "Evidence Article";
+
+
+        modalMeta.textContent =
+            [
+                article.authors,
+                article.journal,
+                article.publication_date,
+                article.pmid
+                    ? `PMID ${article.pmid}`
+                    : ""
+            ]
+                .filter(Boolean)
+                .join(" · ");
+
+
+        modalAbstract.textContent =
+            article.abstract ||
+            "No abstract available.";
+
+
+        modalTypes.innerHTML =
+            (
+                Array.isArray(
+                    article.articleTypes
+                )
+                    ? article.articleTypes
+                    : []
+            )
+                .map(
+                    type =>
+                        `
+                            <span class="modal-tag">
+                                ${escapeHTML(type)}
+                            </span>
+                        `
+                )
+                .join("");
+
+
+        modalSource.href =
+            article.url ||
+            "#";
+
+
+        const id =
+            String(
+                article.pmid ||
+                article.id
+            );
+
+
+        if (
+            caseEvidenceIds.has(id)
+        ) {
+
+            modalSave.textContent =
+                "✓ Linked to Case";
+
+            modalSave.disabled =
+                true;
+
+        } else if (
+            savedEvidenceIds.has(id)
+        ) {
+
+            modalSave.textContent =
+                "✓ Saved";
+
+            modalSave.disabled =
+                true;
+
+        } else {
+
+            modalSave.textContent =
+                currentCaseId
+                    ? "Save to Case"
+                    : "Save to Workspace";
+
+            modalSave.disabled =
+                false;
+
+        }
+
+
+        modal.classList.add(
+            "open"
+        );
+
+    }
+
+
+    function closeModal() {
+
+        modal.classList.remove(
+            "open"
+        );
+
+        currentArticle =
+            null;
+
+    }
+
+
+    modalClose.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    modalCancel.addEventListener(
+        "click",
+        closeModal
+    );
+
+
+    modal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === modal
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    modalSave.addEventListener(
+        "click",
+        async () => {
+
+            if (!currentArticle) {
+
+                return;
+
+            }
+
+
+            await saveEvidence(
+                currentArticle,
+                modalSave
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       SUGGESTED SEARCHES
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            "[data-query]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const query =
+                            button.dataset.query;
+
+                        searchInput.value =
+                            query;
+
+                        form.requestSubmit();
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       UPDATE BUTTONS
+    ===================================================== */
+
+    function updateSaveButtons() {
+
+        document
+            .querySelectorAll(
+                "[data-save]"
+            )
+            .forEach(
+                button => {
+
+                    const id =
+                        button.dataset.save;
+
+
+                    if (
+                        caseEvidenceIds.has(id)
+                    ) {
+
+                        button.textContent =
+                            "✓ LINKED TO CASE";
+
+                        button.disabled =
+                            true;
+
+                        button.classList.remove(
+                            "primary"
+                        );
+
+                        button.classList.add(
+                            "saved"
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       INITIALIZE
+    ===================================================== */
+
+    setEngineStatus(
+        "READY",
+        "ready"
+    );
+
+
+    if (currentCaseId) {
+
+        loadCaseEvidence();
+
+    }
+
+});
+
+
+
+</script>
+
+</body>
+
+</html>
+```

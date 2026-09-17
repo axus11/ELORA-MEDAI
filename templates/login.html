@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Login</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body class="login-page">
+
+    <div class="background-grid"></div>
+
+    <div class="glow glow-one"></div>
+    <div class="glow glow-two"></div>
+
+
+    <main class="login-wrapper">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                E
+            </div>
+
+            <div class="brand-text">
+
+                <h1>ELORA</h1>
+
+                <span>MEDAI</span>
+
+            </div>
+
+        </div>
+
+
+        <section class="login-card">
+
+            <div class="system-status">
+
+                <span class="status-dot"></span>
+
+                SYSTEM ONLINE
+
+            </div>
+
+
+            <h2>Welcome back, Doctor.</h2>
+
+            <p class="login-description">
+                Sign in to access your clinical intelligence workspace.
+            </p>
+
+
+            {% if error %}
+
+            <div class="error-message">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Professional Email
+                    </label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="doctor@elora.med"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="login-options">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                        >
+
+                        Remember me
+
+                    </label>
+
+                    <a href="#">
+                        Forgot password?
+                    </a>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+
+                    Sign in to ELORA
+
+                    <span>→</span>
+
+                </button>
+
+
+            </form>
+
+
+            <div class="security">
+
+                <span>⌁</span>
+
+                Secure clinical workspace
+
+            </div>
+
+        </section>
+
+
+        <p class="disclaimer">
+
+            ELORA MEDAI is a clinical decision-support prototype.
+            AI-generated information must be reviewed by a qualified
+            healthcare professional.
+
+        </p>
+
+    </main>
+
+</body>
+
+</html>

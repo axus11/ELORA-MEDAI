@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}"
+    >
+
+</head>
+
+<body class="dashboard-page">
+
+    <!-- ==============================
+         SIDEBAR
+    ============================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark small">
+                E
+            </div>
+
+            <div>
+                <strong>ELORA</strong>
+                <span>MEDAI</span>
+            </div>
+
+        </div>
+
+
+        <div class="system-status">
+
+            <span class="online-dot"></span>
+
+            SYSTEM ONLINE
+
+        </div>
+
+
+        <nav>
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item active"
+            >
+
+                <span>⌂</span>
+
+                Dashboard
+
+            </a>
+
+
+            <!-- PATIENTS -->
+
+            <a
+                href="{{ url_for('patients') }}"
+                class="nav-item"
+            >
+
+                <span>♙</span>
+
+                Patients
+
+            </a>
+
+
+            <!-- CLINICAL CASES -->
+
+            <a
+                href="{{ url_for('clinical_cases') }}"
+                class="nav-item"
+            >
+
+                <span>◈</span>
+
+                Clinical Cases
+
+            </a>
+
+
+            <!-- EVIDENCE -->
+
+            <a
+                href="{{ url_for('evidence') }}"
+                class="nav-item"
+            >
+
+                <span>⌁</span>
+
+                Evidence
+
+            </a>
+
+
+            <div class="nav-divider"></div>
+
+
+            <!-- SETTINGS -->
+
+           
+
+<a href="{{ url_for('settings') }}" class="nav-item">
+            <span>⚙</span>
+
+            Settings
+
+        </a>
+
+        </nav>
+
+
+        <!-- ==============================
+             DOCTOR
+        ============================== -->
+
+        <div class="sidebar-bottom">
+
+            <div class="doctor-mini">
+
+                <div class="avatar">
+
+                    {{ doctor_initials }}
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name }}
+                    </strong>
+
+                    <span>
+                        {{ doctor_email }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ==============================
+         MAIN DASHBOARD
+    ============================== -->
+
+    <main class="dashboard-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    CLINICAL INTELLIGENCE
+                </span>
+
+                <h1>
+                    Good afternoon, {{ doctor_name }}.
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    class="notification"
+                    type="button"
+                    aria-label="Notifications"
+                >
+
+                    ◉
+
+                    <span></span>
+
+                </button>
+
+
+                <div class="profile">
+
+                    <div class="avatar">
+
+                        {{ doctor_initials }}
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ doctor_name }}
+                        </strong>
+
+                        <small>
+                            Clinical Staff
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- ==============================
+             HERO
+        ============================== -->
+
+        <section class="dashboard-hero">
+
+            <div>
+
+                <span class="hero-label">
+                    ELORA MEDAI
+                </span>
+
+
+                <h2>
+
+                    Clinical intelligence,
+
+                    <br>
+
+                    <em>
+                        built for doctors.
+                    </em>
+
+                </h2>
+
+
+                <p>
+
+                    Analyze clinical information, identify important
+                    findings, and review evidence-assisted insights
+                    in one workspace.
+
+                </p>
+
+
+                <!-- GO DIRECTLY TO CASES -->
+
+                <a
+                    href="{{ url_for('clinical_cases') }}"
+                    class="primary-button"
+                >
+
+                    + New Clinical Case
+
+                </a>
+
+            </div>
+
+
+            <!-- AI ORB -->
+
+            <div class="ai-orb">
+
+                <div class="orb-ring ring-one"></div>
+
+                <div class="orb-ring ring-two"></div>
+
+                <div class="orb-ring ring-three"></div>
+
+
+                <div class="orb-core">
+                    E
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================
+             STATISTICS
+        ============================== -->
+
+        <section class="stats">
+
+
+            <!-- PATIENTS -->
+
+            <a
+                href="{{ url_for('patients') }}"
+                class="stat-card"
+            >
+
+                <div class="stat-icon">
+                    ♙
+                </div>
+
+                <div>
+
+                    <span>
+                        Patients
+                    </span>
+
+                    <strong>
+                        {{ patient_count }}
+                    </strong>
+
+                    <small>
+                        Registered
+                    </small>
+
+                </div>
+
+            </a>
+
+
+
+            <!-- CLINICAL CASES -->
+
+            <a
+                href="{{ url_for('clinical_cases') }}"
+                class="stat-card"
+            >
+
+                <div class="stat-icon">
+                    ◈
+                </div>
+
+                <div>
+
+                    <span>
+                        Clinical Cases
+                    </span>
+
+                    <strong>
+                        {{ case_count }}
+                    </strong>
+
+                    <small>
+                        Total cases
+                    </small>
+
+                </div>
+
+            </a>
+
+
+
+            <!-- SAFETY -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon alert">
+                    !
+                </div>
+
+                <div>
+
+                    <span>
+                        Safety Alerts
+                    </span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <small>
+                        Require review
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AI -->
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <span>
+                        AI Analyses
+                    </span>
+
+                    <strong>
+                        0
+                    </strong>
+
+                    <small>
+                        Completed
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================
+             WORKSPACE
+        ============================== -->
+
+        <section
+            class="workspace"
+            id="clinical-workspace"
+        >
+
+
+            <!-- CLINICAL ANALYSIS -->
+
+            <div class="workspace-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            QUICK ACTION
+                        </span>
+
+                        <h3>
+                            Start a clinical analysis
+                        </h3>
+
+                    </div>
+
+
+                    <span class="secure-badge">
+                        SECURE
+                    </span>
+
+                </div>
+
+
+                <div class="case-input">
+
+                    <div class="input-icon">
+                        +
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            New Clinical Case
+                        </strong>
+
+                        <p>
+
+                            Select a patient and enter symptoms,
+                            vitals, history, medications and
+                            relevant findings.
+
+                        </p>
+
+                    </div>
+
+
+                    <!-- CASE PAGE -->
+
+                    <a
+                        href="{{ url_for('clinical_cases') }}"
+                        class="primary-button"
+                    >
+
+                        Start →
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PATIENT QUICK ACCESS -->
+
+            <div class="workspace-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            PATIENT DATABASE
+                        </span>
+
+                        <h3>
+                            Patient Management
+                        </h3>
+
+                    </div>
+
+                    <span class="secure-badge">
+                        SECURE
+                    </span>
+
+                </div>
+
+
+                <p>
+
+                    View registered patients, review their
+                    information and access their clinical cases.
+
+                </p>
+
+
+                <a
+                    href="{{ url_for('patients') }}"
+                    class="outline-button"
+                >
+
+                    View Patients →
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================
+             ACCOUNT
+        ============================== -->
+
+        <section class="workspace">
+
+
+            <div class="workspace-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            ACCOUNT
+                        </span>
+
+                        <h3>
+                            Doctor Profile
+                        </h3>
+
+                    </div>
+
+
+                    <span class="secure-badge">
+                        VERIFIED
+                    </span>
+
+                </div>
+
+
+                <div class="case-input">
+
+                    <div class="input-icon">
+                        {{ doctor_initials }}
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ doctor_name }}
+                        </strong>
+
+                        <p>
+                            {{ doctor_email }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SECURITY -->
+
+            <div class="workspace-card evidence-card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            SECURITY
+                        </span>
+
+                        <h3>
+                            Session
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+
+                    Your ELORA MEDAI clinical workspace is
+                    protected by an authenticated doctor session.
+
+                </p>
+
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="outline-button"
+                >
+
+                    Sign Out
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==============================
+             FOOTER
+        ============================== -->
+
+        <footer>
+
+            <span>
+                ELORA MEDAI v0.1
+            </span>
+
+
+            <span>
+
+                Clinical decision-support prototype ·
+                Always verify AI-generated information
+
+            </span>
+
+        </footer>
+
+
+    </main>
+
+</body>
+
+</html>

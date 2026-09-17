@@ -1,0 +1,4144 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root {
+
+    --bg: #01050a;
+    --bg-2: #020a11;
+
+    --panel: rgba(5,18,28,.78);
+    --panel-strong: rgba(4,15,24,.94);
+
+    --cyan: #00ffe1;
+    --cyan-soft: #52fff0;
+
+    --blue: #008cff;
+    --blue-soft: #4da8ff;
+
+    --green: #00ff9d;
+
+    --danger: #ff526b;
+    --warning: #ffc857;
+
+    --white: #edffff;
+    --text: #d7f7fa;
+
+    --muted: #67818d;
+    --muted-2: #405964;
+
+    --line: rgba(0,255,225,.10);
+    --line-strong: rgba(0,255,225,.25);
+
+    --sidebar: 270px;
+
+    --radius: 18px;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+body.patients-page {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    color: var(--text);
+
+    font-family:
+        "Inter",
+        sans-serif;
+
+    background:
+
+        radial-gradient(
+            circle at 80% 5%,
+            rgba(0,255,225,.13),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 10% 45%,
+            rgba(0,120,255,.10),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 70% 90%,
+            rgba(0,255,170,.055),
+            transparent 30%
+        ),
+
+        linear-gradient(
+            145deg,
+            #01050a,
+            #020910 50%,
+            #01050a
+        );
+
+    position: relative;
+}
+
+
+/* =========================================================
+   ATMOSPHERIC GRID
+========================================================= */
+
+body.patients-page::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    background-image:
+
+        linear-gradient(
+            rgba(0,255,225,.026) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(0,255,225,.026) 1px,
+            transparent 1px
+        );
+
+    background-size: 52px 52px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            rgba(0,0,0,.75) 65%,
+            transparent
+        );
+
+    animation:
+        gridMove 28s linear infinite;
+}
+
+
+/* =========================================================
+   GLOBAL SCAN
+========================================================= */
+
+body.patients-page::after {
+
+    content: "";
+
+    position: fixed;
+
+    left: 0;
+    right: 0;
+
+    top: -220px;
+
+    height: 220px;
+
+    z-index: 200;
+
+    pointer-events: none;
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            transparent,
+            rgba(0,255,225,.035),
+            rgba(0,255,225,.075),
+            transparent
+        );
+
+    animation:
+        globalScan 11s linear infinite;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #010409;
+}
+
+::-webkit-scrollbar-thumb {
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--cyan),
+            var(--blue)
+        );
+
+    box-shadow:
+        0 0 15px
+        rgba(0,255,225,.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cyan);
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+
+    position: fixed;
+
+    inset: 0 auto 0 0;
+
+    width: var(--sidebar);
+
+    z-index: 100;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 25px 17px;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            rgba(4,18,29,.97),
+            rgba(1,7,13,.985)
+        );
+
+    border-right:
+        1px solid
+        rgba(0,255,225,.12);
+
+    box-shadow:
+
+        20px 0 70px
+        rgba(0,0,0,.5),
+
+        inset -1px 0
+        rgba(0,255,225,.04);
+
+    backdrop-filter:
+        blur(25px);
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   SIDEBAR ENERGY BEAM
+========================================================= */
+
+.sidebar::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: -1px;
+
+    top: 5%;
+
+    width: 1px;
+
+    height: 90%;
+
+    background:
+
+        linear-gradient(
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    opacity: .4;
+
+    animation:
+        sidebarBeam 5s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 25px;
+
+    position: relative;
+}
+
+.brand-mark {
+
+    position: relative;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            var(--cyan),
+            var(--blue)
+        );
+
+    color: #00100f;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 21px;
+
+    font-weight: 900;
+
+    box-shadow:
+
+        0 0 25px
+        rgba(0,255,225,.35),
+
+        0 0 70px
+        rgba(0,120,255,.15);
+
+    animation:
+        logoGlow 3s ease-in-out infinite;
+}
+
+.brand-mark::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -6px;
+
+    border:
+        1px solid
+        rgba(0,255,225,.3);
+
+    border-radius: 18px;
+
+    animation:
+        logoRing 2.8s ease-out infinite;
+}
+
+.brand-mark::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 75px;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    transform: rotate(-45deg);
+
+    opacity: .35;
+}
+
+.sidebar-brand strong {
+
+    display: block;
+
+    color: white;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 17px;
+
+    letter-spacing: 3px;
+}
+
+.sidebar-brand span {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--cyan);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 8px;
+
+    letter-spacing: 4px;
+
+    text-shadow:
+        0 0 12px
+        rgba(0,255,225,.5);
+}
+
+
+/* =========================================================
+   SYSTEM STATUS
+========================================================= */
+
+.system-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 13px;
+
+    margin-bottom: 23px;
+
+    border:
+        1px solid
+        rgba(0,255,190,.14);
+
+    border-radius: 10px;
+
+    color: #71dfd2;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            rgba(0,255,190,.07),
+            rgba(0,255,190,.015)
+        );
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.4px;
+}
+
+.online-dot {
+
+    width: 7px;
+    height: 7px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+
+        0 0 7px var(--green),
+
+        0 0 20px var(--green);
+
+    animation:
+        onlinePulse 1.5s infinite;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.sidebar nav {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.nav-item,
+.sidebar nav > a {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    min-height: 45px;
+
+    padding: 11px 13px;
+
+    color: #637d89;
+
+    text-decoration: none;
+
+    border:
+        1px solid
+        transparent;
+
+    border-radius: 10px;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    overflow: hidden;
+
+    transition:
+        .28s ease;
+}
+
+.nav-item::before,
+.sidebar nav > a::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -110%;
+
+    top: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0,255,225,.10),
+            transparent
+        );
+
+    transition:
+        .45s ease;
+}
+
+.nav-item:hover::before,
+.sidebar nav > a:hover::before {
+    left: 110%;
+}
+
+.nav-item span,
+.sidebar nav > a span {
+
+    width: 22px;
+
+    text-align: center;
+
+    color: #45616e;
+
+    font-size: 17px;
+
+    transition: .25s ease;
+}
+
+.nav-item:hover,
+.sidebar nav > a:hover {
+
+    color: white;
+
+    transform:
+        translateX(4px);
+
+    background:
+        rgba(0,255,225,.045);
+
+    border-color:
+        rgba(0,255,225,.09);
+}
+
+.nav-item:hover span,
+.sidebar nav > a:hover span {
+
+    color: var(--cyan);
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            var(--cyan)
+        );
+}
+
+.nav-item.active {
+
+    color: #efffff;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            rgba(0,255,225,.14),
+            rgba(0,110,255,.035)
+        );
+
+    border:
+        1px solid
+        rgba(0,255,225,.15);
+
+    box-shadow:
+
+        inset 3px 0
+        var(--cyan),
+
+        0 0 30px
+        rgba(0,255,225,.045);
+}
+
+.nav-item.active span {
+
+    color: var(--cyan);
+
+    text-shadow:
+        0 0 13px
+        var(--cyan);
+}
+
+.nav-divider {
+
+    height: 1px;
+
+    margin: 15px 5px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(0,255,225,.2),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   SIDEBAR DOCTOR
+========================================================= */
+
+.sidebar-bottom {
+
+    margin-top: auto;
+
+    padding-top: 18px;
+}
+
+.doctor-mini {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.055);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    transition: .25s ease;
+}
+
+.doctor-mini:hover {
+
+    border-color:
+        rgba(0,255,225,.18);
+
+    background:
+        rgba(0,255,225,.035);
+
+    transform:
+        translateY(-2px);
+}
+
+.avatar {
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background:
+
+        radial-gradient(
+            circle at 35% 25%,
+            #15516a,
+            #06131c 65%
+        );
+
+    border:
+        1px solid
+        rgba(0,255,225,.3);
+
+    color: var(--cyan);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 0 20px
+        rgba(0,255,225,.08);
+}
+
+.doctor-mini strong {
+
+    display: block;
+
+    color: #e5fbff;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.doctor-mini span {
+
+    display: block;
+
+    max-width: 160px;
+
+    margin-top: 4px;
+
+    color: #526d78;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.patients-main {
+
+    position: relative;
+
+    z-index: 1;
+
+    margin-left: var(--sidebar);
+
+    width:
+        calc(100% - var(--sidebar));
+
+    min-height: 100vh;
+
+    padding:
+        38px 50px 45px;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 25px;
+
+    padding-bottom: 25px;
+
+    border-bottom:
+        1px solid
+        rgba(0,255,225,.07);
+
+    position: relative;
+}
+
+.topbar::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: -1px;
+
+    width: 180px;
+
+    height: 1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        var(--cyan);
+}
+
+.eyebrow {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--cyan);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 2.5px;
+
+    text-shadow:
+        0 0 12px
+        rgba(0,255,225,.3);
+}
+
+.topbar h1 {
+
+    margin: 0;
+
+    color: white;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        clamp(23px,2.5vw,34px);
+
+    letter-spacing: -1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #aafff6,
+            #75aaff
+        );
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    color: transparent;
+}
+
+.page-description {
+
+    margin:
+        8px 0 0;
+
+    color:
+        #607984;
+
+    font-size:
+        11px;
+}
+
+
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
+
+.topbar-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+.notification {
+
+    position: relative;
+
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+
+    place-items: center;
+
+    border:
+        1px solid
+        rgba(0,255,225,.12);
+
+    border-radius: 11px;
+
+    color: var(--cyan);
+
+    background:
+        rgba(0,255,225,.035);
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.notification:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(0,255,225,.3);
+
+    box-shadow:
+        0 0 25px
+        rgba(0,255,225,.1);
+}
+
+.notification > span {
+
+    position: absolute;
+
+    right: 8px;
+    top: 7px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background:
+        var(--danger);
+
+    box-shadow:
+        0 0 10px
+        var(--danger);
+
+    animation:
+        notificationPulse 1.5s infinite;
+}
+
+.profile {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.profile strong {
+
+    display: block;
+
+    color: #eaffff;
+
+    font-size: 11px;
+}
+
+.profile small {
+
+    display: block;
+
+    margin-top: 4px;
+
+    color: #607984;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   PATIENT TOOLBAR
+========================================================= */
+
+.patient-toolbar {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 18px;
+
+    padding: 22px 25px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(0,255,225,.10);
+
+    border-radius: 16px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(7,26,38,.82),
+            rgba(2,10,17,.94)
+        );
+
+    box-shadow:
+
+        0 20px 60px
+        rgba(0,0,0,.25),
+
+        inset 0 1px
+        rgba(255,255,255,.025);
+}
+
+.patient-toolbar::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -40%;
+
+    width: 35%;
+
+    height: 1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        var(--cyan);
+
+    animation:
+        toolbarBeam 6s linear infinite;
+}
+
+.patient-count {
+
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 12px;
+}
+
+.count-label {
+
+    color:
+        var(--cyan);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        2px;
+}
+
+.patient-count strong {
+
+    color:
+        white;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        28px;
+
+    text-shadow:
+        0 0 20px
+        rgba(0,255,225,.18);
+}
+
+.count-text {
+
+    color:
+        #526c78;
+
+    font-size:
+        10px;
+}
+
+
+/* =========================================================
+   ADD PATIENT BUTTON
+========================================================= */
+
+.add-patient-button {
+
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 43px;
+
+    padding:
+        0 18px;
+
+    color:
+        #00110f;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            var(--cyan),
+            #00aaff
+        );
+
+    font-size:
+        9px;
+
+    font-weight:
+        800;
+
+    cursor:
+        pointer;
+
+    overflow:
+        hidden;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,255,225,.14);
+
+    transition:
+        .3s ease;
+}
+
+.add-patient-button span {
+
+    font-size:
+        18px;
+
+    line-height:
+        0;
+}
+
+.add-patient-button::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -90%;
+
+    top: 0;
+
+    bottom: 0;
+
+    width: 45%;
+
+    background:
+        rgba(255,255,255,.45);
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        .55s ease;
+}
+
+.add-patient-button:hover::before {
+    left: 140%;
+}
+
+.add-patient-button:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+
+        0 15px 45px
+        rgba(0,255,225,.25),
+
+        0 0 30px
+        rgba(0,160,255,.12);
+}
+
+
+/* =========================================================
+   SEARCH PANEL
+========================================================= */
+
+.search-panel {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+
+    z-index: 20;
+}
+
+.search-box {
+
+    position: relative;
+
+    flex: 1;
+
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    border:
+        1px solid
+        rgba(0,255,225,.09);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(3,14,22,.86);
+
+    overflow:
+        hidden;
+
+    transition:
+        .3s ease;
+}
+
+.search-box::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -100%;
+
+    top: 0;
+
+    width: 45%;
+
+    height: 1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    animation:
+        searchBeam 7s linear infinite;
+}
+
+.search-box:focus-within {
+
+    border-color:
+        rgba(0,255,225,.3);
+
+    box-shadow:
+
+        0 0 30px
+        rgba(0,255,225,.05),
+
+        inset 0 0 25px
+        rgba(0,255,225,.025);
+}
+
+.search-icon {
+
+    margin-left:
+        16px;
+
+    color:
+        var(--cyan);
+
+    font-size:
+        20px;
+
+    text-shadow:
+        0 0 12px
+        var(--cyan);
+}
+
+.search-box input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 100%;
+
+    padding:
+        0 12px;
+
+    color:
+        #dfffff;
+
+    border:
+        0;
+
+    outline:
+        none;
+
+    background:
+        transparent;
+
+    font-family:
+        "Inter",
+        sans-serif;
+
+    font-size:
+        10px;
+}
+
+.search-box input::placeholder {
+    color:
+        #4c6672;
+}
+
+.clear-search {
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    margin-right:
+        5px;
+
+    border:
+        0;
+
+    border-radius:
+        8px;
+
+    color:
+        #62808b;
+
+    background:
+        transparent;
+
+    cursor:
+        pointer;
+
+    font-size:
+        19px;
+
+    transition:
+        .2s ease;
+}
+
+.clear-search:hover {
+
+    color:
+        var(--cyan);
+
+    background:
+        rgba(0,255,225,.07);
+}
+
+.search-shortcut {
+
+    margin-right:
+        14px;
+
+    padding:
+        5px 7px;
+
+    color:
+        #405b66;
+
+    border:
+        1px solid
+        rgba(255,255,255,.06);
+
+    border-radius:
+        5px;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        6px;
+
+    letter-spacing:
+        1px;
+}
+
+
+/* =========================================================
+   FILTER BUTTON
+========================================================= */
+
+.filter-button {
+
+    position:
+        relative;
+
+    height:
+        50px;
+
+    padding:
+        0 17px;
+
+    color:
+        #8caab4;
+
+    border:
+        1px solid
+        rgba(0,255,225,.10);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(3,14,22,.86);
+
+    cursor:
+        pointer;
+
+    font-size:
+        10px;
+
+    transition:
+        .25s ease;
+}
+
+.filter-button:hover {
+
+    color:
+        var(--cyan);
+
+    border-color:
+        rgba(0,255,225,.25);
+
+    background:
+        rgba(0,255,225,.045);
+
+    transform:
+        translateY(-2px);
+}
+
+.filter-active-dot {
+
+    position:
+        absolute;
+
+    top:
+        8px;
+
+    right:
+        8px;
+
+    width:
+        5px;
+
+    height:
+        5px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--cyan);
+
+    box-shadow:
+        0 0 10px
+        var(--cyan);
+
+    opacity:
+        0;
+}
+
+.filter-active-dot.active {
+
+    opacity:
+        1;
+
+    animation:
+        onlinePulse 1.5s infinite;
+}
+
+
+/* =========================================================
+   FILTER PANEL
+========================================================= */
+
+.filter-panel {
+
+    position:
+        absolute;
+
+    right:
+        0;
+
+    top:
+        62px;
+
+    width:
+        min(440px, calc(100vw - 40px));
+
+    padding:
+        22px;
+
+    border:
+        1px solid
+        rgba(0,255,225,.18);
+
+    border-radius:
+        16px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(5,22,33,.97),
+            rgba(1,8,14,.98)
+        );
+
+    box-shadow:
+
+        0 30px 90px
+        rgba(0,0,0,.55),
+
+        0 0 40px
+        rgba(0,255,225,.05);
+
+    backdrop-filter:
+        blur(25px);
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    transform:
+        translateY(-10px)
+        scale(.98);
+
+    transition:
+        .25s ease;
+}
+
+.filter-panel.show {
+
+    opacity:
+        1;
+
+    visibility:
+        visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.filter-panel::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        12%;
+
+    width:
+        35%;
+
+    height:
+        1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        var(--cyan);
+}
+
+.filter-header {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        20px;
+}
+
+.filter-header h3 {
+
+    margin:
+        0;
+
+    color:
+        #eaffff;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        15px;
+}
+
+.filter-close {
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.06);
+
+    border-radius:
+        8px;
+
+    color:
+        #67828c;
+
+    background:
+        rgba(255,255,255,.025);
+
+    cursor:
+        pointer;
+
+    font-size:
+        18px;
+
+    transition:
+        .2s ease;
+}
+
+.filter-close:hover {
+
+    color:
+        var(--cyan);
+
+    border-color:
+        rgba(0,255,225,.2);
+}
+
+.filter-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:
+        14px;
+}
+
+.filter-group label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    color:
+        #64808b;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+}
+
+.filter-group select {
+
+    width:
+        100%;
+
+    height:
+        42px;
+
+    padding:
+        0 11px;
+
+    color:
+        #c9f5f5;
+
+    border:
+        1px solid
+        rgba(0,255,225,.09);
+
+    border-radius:
+        9px;
+
+    outline:
+        none;
+
+    background:
+        #04121b;
+
+    font-size:
+        9px;
+
+    cursor:
+        pointer;
+}
+
+.filter-group select:focus {
+
+    border-color:
+        rgba(0,255,225,.3);
+
+    box-shadow:
+        0 0 20px
+        rgba(0,255,225,.05);
+}
+
+.filter-actions {
+
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        9px;
+
+    margin-top:
+        20px;
+
+    padding-top:
+        17px;
+
+    border-top:
+        1px solid
+        rgba(0,255,225,.07);
+}
+
+.clear-filter,
+.apply-filter {
+
+    min-height:
+        38px;
+
+    padding:
+        0 14px;
+
+    border-radius:
+        8px;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        .25s ease;
+}
+
+.clear-filter {
+
+    color:
+        #6c8792;
+
+    border:
+        1px solid
+        rgba(255,255,255,.07);
+
+    background:
+        rgba(255,255,255,.025);
+}
+
+.clear-filter:hover {
+
+    color:
+        white;
+
+    border-color:
+        rgba(255,255,255,.15);
+}
+
+.apply-filter {
+
+    color:
+        #00110f;
+
+    border:
+        0;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--cyan),
+            var(--blue)
+        );
+
+    box-shadow:
+        0 7px 25px
+        rgba(0,255,225,.12);
+}
+
+.apply-filter:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 12px 35px
+        rgba(0,255,225,.22);
+}
+
+
+/* =========================================================
+   PATIENTS CARD
+========================================================= */
+
+.patients-card {
+
+    position:
+        relative;
+
+    margin-bottom:
+        20px;
+
+    border:
+        1px solid
+        rgba(0,255,225,.09);
+
+    border-radius:
+        18px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(7,25,36,.86),
+            rgba(2,10,17,.95)
+        );
+
+    box-shadow:
+
+        0 25px 80px
+        rgba(0,0,0,.3),
+
+        inset 0 1px
+        rgba(255,255,255,.025);
+
+    overflow:
+        hidden;
+}
+
+.patients-card::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    left:
+        -30%;
+
+    top:
+        0;
+
+    width:
+        35%;
+
+    height:
+        1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        var(--cyan);
+
+    animation:
+        panelBeam 7s linear infinite;
+}
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
+
+.table-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        24px 25px;
+
+    border-bottom:
+        1px solid
+        rgba(0,255,225,.07);
+}
+
+.table-header h2 {
+
+    margin:
+        0;
+
+    color:
+        #eaffff;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        15px;
+}
+
+.secure-badge {
+
+    padding:
+        6px 9px;
+
+    color:
+        #63dbce;
+
+    border:
+        1px solid
+        rgba(0,255,200,.13);
+
+    border-radius:
+        20px;
+
+    background:
+        rgba(0,255,200,.035);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    letter-spacing:
+        1px;
+
+    white-space:
+        nowrap;
+
+    box-shadow:
+        0 0 15px
+        rgba(0,255,200,.025);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+
+    width:
+        100%;
+
+    overflow-x:
+        auto;
+}
+
+table {
+
+    width:
+        100%;
+
+    min-width:
+        920px;
+
+    border-collapse:
+        collapse;
+}
+
+thead {
+
+    background:
+        rgba(0,255,225,.025);
+}
+
+th {
+
+    padding:
+        13px 18px;
+
+    color:
+        #496571;
+
+    border-bottom:
+        1px solid
+        rgba(0,255,225,.07);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1.4px;
+
+    text-align:
+        left;
+
+    white-space:
+        nowrap;
+}
+
+tbody tr {
+
+    position:
+        relative;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.035);
+
+    transition:
+        .28s ease;
+}
+
+tbody tr::after {
+
+    content: "";
+
+    position:
+        absolute;
+
+    left:
+        -100%;
+
+    bottom:
+        -1px;
+
+    width:
+        35%;
+
+    height:
+        1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    opacity:
+        0;
+
+    transition:
+        .3s ease;
+}
+
+tbody tr:hover {
+
+    background:
+        rgba(0,255,225,.035);
+
+    box-shadow:
+        inset 3px 0
+        rgba(0,255,225,.7);
+}
+
+tbody tr:hover::after {
+
+    left:
+        30%;
+
+    opacity:
+        .7;
+}
+
+td {
+
+    padding:
+        15px 18px;
+
+    color:
+        #91aab3;
+
+    font-size:
+        9px;
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   PATIENT NAME
+========================================================= */
+
+.patient-name {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        11px;
+}
+
+.patient-avatar {
+
+    width:
+        39px;
+
+    height:
+        39px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        11px;
+
+    color:
+        var(--cyan);
+
+    border:
+        1px solid
+        rgba(0,255,225,.18);
+
+    background:
+
+        radial-gradient(
+            circle at 35% 25%,
+            #15516a,
+            #06131c 70%
+        );
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        8px;
+
+    font-weight:
+        800;
+
+    box-shadow:
+        0 0 18px
+        rgba(0,255,225,.06);
+
+    transition:
+        .3s ease;
+}
+
+.patient-row:hover .patient-avatar {
+
+    transform:
+        rotate(-5deg)
+        scale(1.08);
+
+    border-color:
+        rgba(0,255,225,.4);
+
+    box-shadow:
+        0 0 25px
+        rgba(0,255,225,.15);
+}
+
+.patient-name strong {
+
+    display:
+        block;
+
+    color:
+        #dffaff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+}
+
+.patient-name span {
+
+    display:
+        block;
+
+    max-width:
+        190px;
+
+    margin-top:
+        4px;
+
+    color:
+        #526d78;
+
+    font-size:
+        7px;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+
+/* =========================================================
+   PATIENT ID
+========================================================= */
+
+.patient-id {
+
+    display:
+        inline-block;
+
+    padding:
+        5px 8px;
+
+    color:
+        #73d9d0;
+
+    border:
+        1px solid
+        rgba(0,255,225,.10);
+
+    border-radius:
+        6px;
+
+    background:
+        rgba(0,255,225,.025);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    letter-spacing:
+        .5px;
+}
+
+
+/* =========================================================
+   CASE COUNT
+========================================================= */
+
+.case-count {
+
+    color:
+        #eaffff;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
+.case-label {
+
+    margin-left:
+        4px;
+
+    color:
+        #526b76;
+
+    font-size:
+        8px;
+}
+
+
+/* =========================================================
+   ACTIVE STATUS
+========================================================= */
+
+.status-active {
+
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    padding:
+        5px 8px;
+
+    color:
+        #63e3b7;
+
+    border:
+        1px solid
+        rgba(0,255,157,.13);
+
+    border-radius:
+        20px;
+
+    background:
+        rgba(0,255,157,.035);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        6px;
+
+    letter-spacing:
+        1px;
+}
+
+.status-active::before {
+
+    content: "";
+
+    width:
+        4px;
+
+    height:
+        4px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--green);
+
+    box-shadow:
+        0 0 8px
+        var(--green);
+
+    animation:
+        onlinePulse 1.5s infinite;
+}
+
+
+/* =========================================================
+   VIEW BUTTON
+========================================================= */
+
+.view-button {
+
+    position:
+        relative;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        31px;
+
+    padding:
+        0 11px;
+
+    color:
+        #79d9d2;
+
+    border:
+        1px solid
+        rgba(0,255,225,.12);
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(0,255,225,.025);
+
+    text-decoration:
+        none;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    overflow:
+        hidden;
+
+    transition:
+        .25s ease;
+}
+
+.view-button::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    left:
+        -100%;
+
+    top:
+        0;
+
+    bottom:
+        0;
+
+    width:
+        50%;
+
+    background:
+        rgba(255,255,255,.15);
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        .4s ease;
+}
+
+.view-button:hover::before {
+    left:
+        130%;
+}
+
+.view-button:hover {
+
+    color:
+        var(--cyan);
+
+    border-color:
+        rgba(0,255,225,.35);
+
+    background:
+        rgba(0,255,225,.07);
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0,255,225,.08);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    padding:
+        60px 20px;
+
+    text-align:
+        center;
+}
+
+.empty-icon {
+
+    width:
+        65px;
+
+    height:
+        65px;
+
+    margin:
+        0 auto 18px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        18px;
+
+    color:
+        var(--cyan);
+
+    border:
+        1px solid
+        rgba(0,255,225,.18);
+
+    background:
+        rgba(0,255,225,.04);
+
+    font-size:
+        25px;
+
+    box-shadow:
+        0 0 35px
+        rgba(0,255,225,.06);
+
+    animation:
+        emptyFloat 3s ease-in-out infinite;
+}
+
+.empty-state h3 {
+
+    margin:
+        0;
+
+    color:
+        #dffaff;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        13px;
+}
+
+.empty-state p {
+
+    max-width:
+        420px;
+
+    margin:
+        10px auto 20px;
+
+    color:
+        #58727d;
+
+    font-size:
+        9px;
+
+    line-height:
+        1.7;
+}
+
+.empty-button {
+
+    min-height:
+        38px;
+
+    padding:
+        0 15px;
+
+    color:
+        var(--cyan);
+
+    border:
+        1px solid
+        rgba(0,255,225,.18);
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(0,255,225,.035);
+
+    cursor:
+        pointer;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    transition:
+        .25s ease;
+}
+
+.empty-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(0,255,225,.4);
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,255,225,.08);
+}
+
+
+/* =========================================================
+   QUICK INFO
+========================================================= */
+
+.patient-info-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:
+        18px;
+
+    margin-bottom:
+        20px;
+}
+
+.info-card {
+
+    position:
+        relative;
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        15px;
+
+    padding:
+        22px;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        rgba(0,255,225,.075);
+
+    border-radius:
+        15px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(7,25,36,.80),
+            rgba(2,10,17,.92)
+        );
+
+    transition:
+        .3s ease;
+}
+
+.info-card::after {
+
+    content: "";
+
+    position:
+        absolute;
+
+    right:
+        -80px;
+
+    bottom:
+        -90px;
+
+    width:
+        160px;
+
+    height:
+        160px;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(0,255,225,.045);
+
+    filter:
+        blur(30px);
+
+    animation:
+        ambientPulse 5s ease-in-out infinite;
+}
+
+.info-card:hover {
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(0,255,225,.18);
+
+    box-shadow:
+        0 20px 55px
+        rgba(0,0,0,.3);
+}
+
+.info-icon {
+
+    width:
+        43px;
+
+    height:
+        43px;
+
+    flex-shrink:
+        0;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border-radius:
+        12px;
+
+    color:
+        var(--cyan);
+
+    border:
+        1px solid
+        rgba(0,255,225,.16);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,255,225,.12),
+            rgba(0,120,255,.06)
+        );
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        13px;
+}
+
+.info-icon.cyan {
+
+    color:
+        var(--blue-soft);
+
+    border-color:
+        rgba(0,140,255,.18);
+
+    background:
+        rgba(0,140,255,.06);
+}
+
+.info-card span {
+
+    display:
+        block;
+
+    margin-bottom:
+        5px;
+
+    color:
+        #5d7782;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        6px;
+
+    letter-spacing:
+        1.5px;
+}
+
+.info-card strong {
+
+    display:
+        block;
+
+    color:
+        #e4fbff;
+
+    font-size:
+        11px;
+}
+
+.info-card p {
+
+    max-width:
+        440px;
+
+    margin:
+        7px 0 0;
+
+    color:
+        #536d78;
+
+    font-size:
+        8px;
+
+    line-height:
+        1.7;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        25px 4px 10px;
+
+    color:
+        #3e5660;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.modal-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        1000;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    background:
+        rgba(0,4,8,.76);
+
+    backdrop-filter:
+        blur(14px);
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    transition:
+        .3s ease;
+}
+
+.modal-overlay.show {
+
+    opacity:
+        1;
+
+    visibility:
+        visible;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.patient-modal {
+
+    position:
+        relative;
+
+    width:
+        min(620px,100%);
+
+    max-height:
+        90vh;
+
+    overflow-y:
+        auto;
+
+    padding:
+        32px;
+
+    border:
+        1px solid
+        rgba(0,255,225,.18);
+
+    border-radius:
+        20px;
+
+    background:
+
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(0,255,225,.08),
+            transparent 30%
+        ),
+
+        linear-gradient(
+            145deg,
+            rgba(6,25,37,.98),
+            rgba(1,8,14,.99)
+        );
+
+    box-shadow:
+
+        0 40px 120px
+        rgba(0,0,0,.7),
+
+        0 0 70px
+        rgba(0,255,225,.06),
+
+        inset 0 1px
+        rgba(255,255,255,.035);
+
+    transform:
+        translateY(20px)
+        scale(.96);
+
+    transition:
+        .35s cubic-bezier(.2,.8,.2,1);
+}
+
+.modal-overlay.show .patient-modal {
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.patient-modal::before {
+
+    content: "";
+
+    position:
+        absolute;
+
+    left:
+        10%;
+
+    top:
+        0;
+
+    width:
+        45%;
+
+    height:
+        1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 20px
+        var(--cyan);
+
+    animation:
+        modalBeam 4s linear infinite;
+}
+
+.patient-modal h2 {
+
+    margin:
+        0;
+
+    color:
+        white;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        24px;
+}
+
+.patient-modal > p {
+
+    margin:
+        9px 0 25px;
+
+    color:
+        #607b86;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.6;
+}
+
+.modal-close {
+
+    position:
+        absolute;
+
+    right:
+        17px;
+
+    top:
+        17px;
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    color:
+        #607a85;
+
+    border:
+        1px solid
+        rgba(255,255,255,.06);
+
+    border-radius:
+        9px;
+
+    background:
+        rgba(255,255,255,.025);
+
+    cursor:
+        pointer;
+
+    font-size:
+        19px;
+
+    transition:
+        .25s ease;
+}
+
+.modal-close:hover {
+
+    color:
+        var(--cyan);
+
+    border-color:
+        rgba(0,255,225,.25);
+
+    background:
+        rgba(0,255,225,.05);
+
+    transform:
+        rotate(90deg);
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:
+        15px;
+}
+
+.form-group.full {
+
+    grid-column:
+        1 / -1;
+}
+
+.form-group label {
+
+    display:
+        block;
+
+    margin-bottom:
+        7px;
+
+    color:
+        #70909b;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        7px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        1px;
+
+    text-transform:
+        uppercase;
+}
+
+.form-group input,
+.form-group select {
+
+    width:
+        100%;
+
+    height:
+        43px;
+
+    padding:
+        0 12px;
+
+    color:
+        #dffaff;
+
+    border:
+        1px solid
+        rgba(0,255,225,.09);
+
+    border-radius:
+        9px;
+
+    outline:
+        none;
+
+    background:
+        rgba(0,255,225,.025);
+
+    font-family:
+        "Inter",
+        sans-serif;
+
+    font-size:
+        9px;
+
+    transition:
+        .25s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+
+    border-color:
+        rgba(0,255,225,.35);
+
+    background:
+        rgba(0,255,225,.04);
+
+    box-shadow:
+
+        0 0 25px
+        rgba(0,255,225,.05),
+
+        inset 0 0 15px
+        rgba(0,255,225,.02);
+}
+
+.form-group input::placeholder {
+    color:
+        #405b66;
+}
+
+.form-group select option {
+    background:
+        #04121b;
+
+    color:
+        #dffaff;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+========================================================= */
+
+.modal-actions {
+
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        10px;
+
+    margin-top:
+        25px;
+
+    padding-top:
+        18px;
+
+    border-top:
+        1px solid
+        rgba(0,255,225,.07);
+}
+
+.cancel-button,
+.save-button {
+
+    min-height:
+        42px;
+
+    padding:
+        0 17px;
+
+    border-radius:
+        9px;
+
+    cursor:
+        pointer;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+    transition:
+        .25s ease;
+}
+
+.cancel-button {
+
+    color:
+        #6c8792;
+
+    border:
+        1px solid
+        rgba(255,255,255,.07);
+
+    background:
+        rgba(255,255,255,.025);
+}
+
+.cancel-button:hover {
+
+    color:
+        white;
+
+    border-color:
+        rgba(255,255,255,.15);
+}
+
+.save-button {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    color:
+        #00110f;
+
+    border:
+        0;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            var(--cyan),
+            var(--blue)
+        );
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,255,225,.14);
+}
+
+.save-button:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+
+        0 15px 45px
+        rgba(0,255,225,.25);
+}
+
+.save-button span {
+    font-size:
+        14px;
+}
+
+
+/* =========================================================
+   HUD DECORATION
+========================================================= */
+
+.patients-main::before {
+
+    content:
+        "ELORA // PATIENT DATABASE // SECURE CLINICAL NETWORK";
+
+    position:
+        fixed;
+
+    right:
+        35px;
+
+    bottom:
+        18px;
+
+    z-index:
+        -1;
+
+    color:
+        rgba(0,255,225,.035);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        8px;
+
+    letter-spacing:
+        3px;
+
+    pointer-events:
+        none;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes gridMove {
+
+    from {
+        background-position:
+            0 0;
+    }
+
+    to {
+        background-position:
+            52px 52px;
+    }
+}
+
+@keyframes globalScan {
+
+    0% {
+        top:
+            -220px;
+    }
+
+    100% {
+        top:
+            110%;
+    }
+}
+
+@keyframes sidebarBeam {
+
+    0%,100% {
+
+        transform:
+            translateY(-25%);
+
+        opacity:
+            .15;
+    }
+
+    50% {
+
+        transform:
+            translateY(25%);
+
+        opacity:
+            .8;
+    }
+}
+
+@keyframes logoGlow {
+
+    0%,100% {
+
+        box-shadow:
+            0 0 22px
+            rgba(0,255,225,.3);
+    }
+
+    50% {
+
+        box-shadow:
+
+            0 0 35px
+            rgba(0,255,225,.5),
+
+            0 0 75px
+            rgba(0,120,255,.15);
+    }
+}
+
+@keyframes logoRing {
+
+    0% {
+
+        transform:
+            scale(.95);
+
+        opacity:
+            .7;
+    }
+
+    100% {
+
+        transform:
+            scale(1.3);
+
+        opacity:
+            0;
+    }
+}
+
+@keyframes onlinePulse {
+
+    0%,100% {
+
+        opacity:
+            1;
+
+        transform:
+            scale(1);
+    }
+
+    50% {
+
+        opacity:
+            .4;
+
+        transform:
+            scale(.7);
+    }
+}
+
+@keyframes notificationPulse {
+
+    0%,100% {
+
+        opacity:
+            1;
+
+        transform:
+            scale(1);
+    }
+
+    50% {
+
+        opacity:
+            .45;
+
+        transform:
+            scale(.7);
+    }
+}
+
+@keyframes toolbarBeam {
+
+    0% {
+        left:
+            -40%;
+    }
+
+    100% {
+        left:
+            130%;
+    }
+}
+
+@keyframes searchBeam {
+
+    0% {
+        left:
+            -100%;
+    }
+
+    100% {
+        left:
+            150%;
+    }
+}
+
+@keyframes panelBeam {
+
+    0% {
+        left:
+            -50%;
+    }
+
+    100% {
+        left:
+            130%;
+    }
+}
+
+@keyframes modalBeam {
+
+    0% {
+        left:
+            -20%;
+    }
+
+    100% {
+        left:
+            110%;
+    }
+}
+
+@keyframes emptyFloat {
+
+    0%,100% {
+
+        transform:
+            translateY(0);
+    }
+
+    50% {
+
+        transform:
+            translateY(-8px);
+    }
+}
+
+@keyframes ambientPulse {
+
+    0%,100% {
+
+        opacity:
+            .45;
+
+        transform:
+            scale(1);
+    }
+
+    50% {
+
+        opacity:
+            .9;
+
+        transform:
+            scale(1.15);
+    }
+}
+
+
+/* =========================================================
+   LARGE SCREENS
+========================================================= */
+
+@media (min-width: 1500px) {
+
+    .patients-main {
+
+        padding-left:
+            70px;
+
+        padding-right:
+            70px;
+    }
+
+    table {
+        min-width:
+            1000px;
+    }
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1150px) {
+
+    :root {
+        --sidebar:
+            225px;
+    }
+
+    .patients-main {
+
+        padding:
+            32px 28px 40px;
+    }
+
+    .patient-info-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    body.patients-page {
+
+        overflow-x:
+            hidden;
+
+        overflow-y:
+            auto;
+    }
+
+    .sidebar {
+
+        position:
+            relative;
+
+        width:
+            100%;
+
+        height:
+            auto;
+
+        padding:
+            15px;
+
+        border-right:
+            0;
+
+        border-bottom:
+            1px solid
+            rgba(0,255,225,.1);
+
+        overflow:
+            visible;
+    }
+
+    .sidebar-bottom {
+        display:
+            none;
+    }
+
+    .sidebar-brand {
+        margin-bottom:
+            15px;
+    }
+
+    .system-status {
+        margin-bottom:
+            12px;
+    }
+
+    .sidebar nav {
+
+        flex-direction:
+            row;
+
+        overflow-x:
+            auto;
+
+        padding-bottom:
+            4px;
+
+        scrollbar-width:
+            none;
+    }
+
+    .sidebar nav::-webkit-scrollbar {
+        display:
+            none;
+    }
+
+    .nav-item,
+    .sidebar nav > a {
+
+        flex-shrink:
+            0;
+
+        min-height:
+            40px;
+
+        padding:
+            9px 13px;
+    }
+
+    .nav-item span,
+    .sidebar nav > a span {
+        display:
+            none;
+    }
+
+    .nav-divider {
+        display:
+            none;
+    }
+
+    .patients-main {
+
+        width:
+            100%;
+
+        margin-left:
+            0;
+
+        min-height:
+            auto;
+
+        padding:
+            25px 15px 60px;
+    }
+
+    .topbar {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+
+    .topbar-actions {
+
+        width:
+            100%;
+
+        justify-content:
+            space-between;
+    }
+
+    .patient-toolbar {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        padding:
+            20px;
+    }
+
+    .add-patient-button {
+
+        width:
+            100%;
+    }
+
+    .search-panel {
+
+        align-items:
+            stretch;
+
+        flex-direction:
+            column;
+    }
+
+    .filter-button {
+
+        width:
+            100%;
+    }
+
+    .filter-panel {
+
+        position:
+            fixed;
+
+        left:
+            15px;
+
+        right:
+            15px;
+
+        top:
+            50%;
+
+        width:
+            auto;
+
+        transform:
+            translateY(-45%)
+            scale(.98);
+    }
+
+    .filter-panel.show {
+
+        transform:
+            translateY(-50%)
+            scale(1);
+    }
+
+    .filter-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .table-wrapper {
+
+        overflow-x:
+            auto;
+    }
+
+    .patient-info-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    footer {
+
+        flex-direction:
+            column;
+
+        text-align:
+            center;
+
+        gap:
+            8px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .patients-main {
+
+        padding:
+            20px 10px 50px;
+    }
+
+    .topbar h1 {
+        font-size:
+            22px;
+    }
+
+    .patient-toolbar {
+
+        border-radius:
+            14px;
+    }
+
+    .patient-count {
+
+        flex-wrap:
+            wrap;
+    }
+
+    .patient-count strong {
+        font-size:
+            24px;
+    }
+
+    .table-header {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        gap:
+            12px;
+
+        padding:
+            20px;
+    }
+
+    .secure-badge {
+        align-self:
+            flex-start;
+    }
+
+    .profile {
+        display:
+            none;
+    }
+
+    .notification {
+        margin-left:
+            auto;
+    }
+
+    .patient-modal {
+
+        padding:
+            25px 18px;
+
+        border-radius:
+            16px;
+    }
+
+    .form-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .form-group.full {
+
+        grid-column:
+            auto;
+    }
+
+    .modal-actions {
+
+        flex-direction:
+            column-reverse;
+    }
+
+    .cancel-button,
+    .save-button {
+
+        width:
+            100%;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+
+        transition-duration:
+            .01ms !important;
+    }
+}

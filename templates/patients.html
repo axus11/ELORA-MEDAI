@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Patients</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/patients.css') }}"
+    >
+
+</head>
+
+
+<body class="patients-page">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark">
+                E
+            </div>
+
+            <div>
+
+                <strong>ELORA</strong>
+
+                <span>MEDAI</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="system-status">
+
+            <span class="online-dot"></span>
+
+            SYSTEM ONLINE
+
+        </div>
+
+
+        <nav>
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span>⌂</span>
+                Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('patients') }}"
+                class="nav-item active"
+            >
+                <span>♙</span>
+                Patients
+            </a>
+
+
+            <a
+                href="{{ url_for('clinical_cases') }}"
+                class="nav-item"
+            >
+                <span>◈</span>
+                Clinical Cases
+            </a>
+
+
+            <a
+                href="{{ url_for('evidence') }}"
+                class="nav-item"
+            >
+                <span>⌁</span>
+                Evidence
+            </a>
+
+
+            <div class="nav-divider"></div>
+
+
+         
+
+<a href="{{ url_for('settings') }}" class="nav-item">
+            <span>⚙</span>
+
+            Settings
+
+        </a>
+
+
+        <!-- DOCTOR -->
+
+        <div class="sidebar-bottom">
+
+            <div class="doctor-mini">
+
+                <div class="avatar">
+
+                    {{ doctor_name[:2].upper()
+                    if doctor_name else "DR" }}
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name or "Doctor" }}
+                    </strong>
+
+                    <span>
+                        Medical Staff
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="patients-main">
+
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+
+        <header class="topbar">
+
+            <div>
+
+                <span class="eyebrow">
+                    CLINICAL MANAGEMENT
+                </span>
+
+                <h1>
+                    Patients
+                </h1>
+
+                <p class="page-description">
+                    Manage patient records and clinical information.
+                </p>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+                <button
+                    class="notification"
+                    type="button"
+                >
+                    ◉
+                    <span></span>
+                </button>
+
+
+                <div class="profile">
+
+                    <div class="avatar">
+
+                        {{ doctor_name[:2].upper()
+                        if doctor_name else "DR" }}
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ doctor_name or "Doctor" }}
+                        </strong>
+
+                        <small>
+                            Clinical Staff
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             PATIENT HEADER
+        ================================================== -->
+
+        <section class="patient-toolbar">
+
+            <div class="patient-count">
+
+                <span class="count-label">
+                    PATIENT DATABASE
+                </span>
+
+
+                <strong id="patientCount">
+                    {{ patients|length }}
+                </strong>
+
+
+                <span class="count-text">
+                    registered patients
+                </span>
+
+            </div>
+
+
+            <button
+                class="add-patient-button"
+                type="button"
+            >
+
+                <span>+</span>
+
+                Add New Patient
+
+            </button>
+
+        </section>
+
+
+
+        <!-- =================================================
+             SEARCH + FILTER
+        ================================================== -->
+
+        <section class="search-panel">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+
+                <input
+                    type="text"
+                    placeholder="Search patients by name, ID, or email..."
+                    id="patientSearch"
+                    autocomplete="off"
+                >
+
+
+                <button
+                    type="button"
+                    class="clear-search"
+                    id="clearSearch"
+                    title="Clear search"
+                >
+                    ×
+                </button>
+
+
+                <span class="search-shortcut">
+                    CTRL + K
+                </span>
+
+            </div>
+
+
+
+            <!-- FILTER BUTTON -->
+
+            <button
+                class="filter-button"
+                id="filterButton"
+                type="button"
+            >
+
+                ☷
+
+                Filter
+
+                <span
+                    class="filter-active-dot"
+                    id="filterActiveDot"
+                ></span>
+
+            </button>
+
+
+
+            <!-- =================================================
+                 FILTER PANEL
+            ================================================== -->
+
+            <div
+                class="filter-panel"
+                id="filterPanel"
+            >
+
+                <div class="filter-header">
+
+                    <div>
+
+                        <span class="eyebrow">
+                            PATIENT FILTERS
+                        </span>
+
+                        <h3>
+                            Filter Records
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="filter-close"
+                        id="closeFilter"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <div class="filter-grid">
+
+
+                    <!-- GENDER -->
+
+                    <div class="filter-group">
+
+                        <label for="genderFilter">
+                            Gender
+                        </label>
+
+
+                        <select id="genderFilter">
+
+                            <option value="all">
+                                All genders
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="filter-group">
+
+                        <label for="statusFilter">
+                            Status
+                        </label>
+
+
+                        <select id="statusFilter">
+
+                            <option value="all">
+                                All statuses
+                            </option>
+
+                            <option value="ACTIVE">
+                                Active
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="filter-actions">
+
+                    <button
+                        type="button"
+                        class="clear-filter"
+                        id="clearFilters"
+                    >
+                        Reset Filters
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="apply-filter"
+                        id="applyFilters"
+                    >
+                        Apply Filters →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PATIENT TABLE
+        ================================================== -->
+
+        <section class="patients-card">
+
+
+            <div class="table-header">
+
+                <div>
+
+                    <span class="eyebrow">
+                        PATIENT RECORDS
+                    </span>
+
+                    <h2>
+                        All Patients
+                    </h2>
+
+                </div>
+
+
+                <span class="secure-badge">
+                    SECURE DATABASE
+                </span>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                PATIENT
+                            </th>
+
+                            <th>
+                                PATIENT ID
+                            </th>
+
+                            <th>
+                                DOB
+                            </th>
+
+                            <th>
+                                CLINICAL CASES
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                REGISTERED
+                            </th>
+
+                            <th>
+                                ACTION
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody id="patientTable">
+
+
+                    {% if patients %}
+
+
+                        {% for patient in patients %}
+
+                        <tr
+                            class="patient-row"
+
+                            data-name="{{ patient.first_name }} {{ patient.last_name }}"
+
+                            data-id="{{ patient.patient_id }}"
+
+                            data-email="{{ patient.email or '' }}"
+
+                            data-gender="{{ patient.gender or '' }}"
+
+                            data-status="ACTIVE"
+                        >
+
+
+                            <!-- PATIENT -->
+
+                            <td>
+
+                                <div class="patient-name">
+
+                                    <div class="patient-avatar">
+
+                                        {{ patient.first_name[0].upper() }}{{ patient.last_name[0].upper() }}
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <strong>
+
+                                            {{ patient.first_name }}
+                                            {{ patient.last_name }}
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            {{ patient.email
+                                            or
+                                            "No email provided" }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+
+                            <!-- ID -->
+
+                            <td>
+
+                                <span class="patient-id">
+
+                                    {{ patient.patient_id }}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- DOB -->
+
+                            <td>
+
+                                {{ patient.date_of_birth }}
+
+                            </td>
+
+
+
+                            <!-- CASE COUNT -->
+
+                            <td>
+
+                                <span class="case-count">
+
+                                    {{ patient.cases|length }}
+
+                                </span>
+
+
+                                <span class="case-label">
+
+                                    {% if patient.cases|length == 1 %}
+
+                                        case
+
+                                    {% else %}
+
+                                        cases
+
+                                    {% endif %}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span class="status-active">
+
+                                    ACTIVE
+
+                                </span>
+
+                            </td>
+
+
+
+                            <!-- REGISTERED -->
+
+                            <td>
+
+                                {{ patient.created_at.strftime(
+                                    "%b %d, %Y"
+                                ) }}
+
+                            </td>
+
+
+
+                            <!-- ACTION -->
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'patient_profile',
+                                        patient_id=patient.id
+                                    ) }}"
+                                    class="view-button"
+                                >
+
+                                    View →
+
+                                </a>
+
+                            </td>
+
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+
+                        <!-- EMPTY DATABASE -->
+
+                        <tr class="empty-row">
+
+                            <td colspan="7">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-icon">
+                                        ♙
+                                    </div>
+
+
+                                    <h3>
+                                        No patients registered
+                                    </h3>
+
+
+                                    <p>
+
+                                        Patient records will appear
+                                        here once they are added to
+                                        ELORA MEDAI.
+
+                                    </p>
+
+
+                                    <button
+                                        class="empty-button"
+                                        type="button"
+                                    >
+
+                                        + Add First Patient
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endif %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             QUICK INFO
+        ================================================== -->
+
+        <section class="patient-info-grid">
+
+
+            <div class="info-card">
+
+                <div class="info-icon">
+                    ◉
+                </div>
+
+
+                <div>
+
+                    <span>
+                        PATIENT SECURITY
+                    </span>
+
+                    <strong>
+                        Protected Records
+                    </strong>
+
+                    <p>
+
+                        Patient information is handled inside
+                        the secure ELORA clinical workspace.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="info-card">
+
+                <div class="info-icon cyan">
+                    AI
+                </div>
+
+
+                <div>
+
+                    <span>
+                        AI READY
+                    </span>
+
+                    <strong>
+                        Clinical Intelligence
+                    </strong>
+
+                    <p>
+
+                        Patient information can be connected
+                        directly to clinical case analysis.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer>
+
+            <span>
+                ELORA MEDAI v0.1
+            </span>
+
+            <span>
+
+                Patient management prototype ·
+                Always verify clinical information
+
+            </span>
+
+        </footer>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         ADD PATIENT MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="patientModal"
+    >
+
+        <div class="patient-modal">
+
+
+            <button
+                class="modal-close"
+                id="closeModal"
+                type="button"
+            >
+                ×
+            </button>
+
+
+            <span class="eyebrow">
+                NEW PATIENT
+            </span>
+
+
+            <h2>
+                Add Patient
+            </h2>
+
+
+            <p>
+                Create a new patient record for the clinical workspace.
+            </p>
+
+
+
+            <!-- FORM -->
+
+            <form
+                method="POST"
+                action="{{ url_for('add_patient') }}"
+            >
+
+                <div class="form-grid">
+
+
+                    <!-- FIRST NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            First Name
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="first_name"
+                            placeholder="First name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- LAST NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Last Name
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="last_name"
+                            placeholder="Last name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- DOB -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Date of Birth
+                        </label>
+
+
+                        <input
+                            type="date"
+                            name="date_of_birth"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- GENDER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Gender
+                        </label>
+
+
+                        <select name="gender">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            Email
+                        </label>
+
+
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="patient@email.com"
+                        >
+
+                    </div>
+
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            Phone
+                        </label>
+
+
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="+251..."
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ACTIONS -->
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        id="cancelModal"
+                    >
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+
+                        Create Patient
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+
+        /* =================================================
+           ELEMENTS
+        ================================================= */
+
+        const modal =
+            document.getElementById("patientModal");
+
+
+        const addButtons =
+            document.querySelectorAll(
+                ".add-patient-button, .empty-button"
+            );
+
+
+        const closeModal =
+            document.getElementById("closeModal");
+
+
+        const cancelModal =
+            document.getElementById("cancelModal");
+
+
+        const searchInput =
+            document.getElementById("patientSearch");
+
+
+        const clearSearch =
+            document.getElementById("clearSearch");
+
+
+        const filterButton =
+            document.getElementById("filterButton");
+
+
+        const filterPanel =
+            document.getElementById("filterPanel");
+
+
+        const closeFilter =
+            document.getElementById("closeFilter");
+
+
+        const genderFilter =
+            document.getElementById("genderFilter");
+
+
+        const statusFilter =
+            document.getElementById("statusFilter");
+
+
+        const clearFilters =
+            document.getElementById("clearFilters");
+
+
+        const applyFilters =
+            document.getElementById("applyFilters");
+
+
+        const patientCount =
+            document.getElementById("patientCount");
+
+
+        const filterActiveDot =
+            document.getElementById(
+                "filterActiveDot"
+            );
+
+
+
+        /* =================================================
+           PATIENT ROWS
+        ================================================= */
+
+        const patientRows =
+            document.querySelectorAll(
+                ".patient-row"
+            );
+
+
+
+        /* =================================================
+           OPEN PATIENT MODAL
+        ================================================= */
+
+        addButtons.forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    modal.classList.add(
+                        "show"
+                    );
+
+                }
+            );
+
+        });
+
+
+
+        /* =================================================
+           CLOSE PATIENT MODAL
+        ================================================= */
+
+        function closePatientModal() {
+
+            modal.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        if (closeModal) {
+
+            closeModal.addEventListener(
+                "click",
+                closePatientModal
+            );
+
+        }
+
+
+        if (cancelModal) {
+
+            cancelModal.addEventListener(
+                "click",
+                closePatientModal
+            );
+
+        }
+
+
+        if (modal) {
+
+            modal.addEventListener(
+                "click",
+                event => {
+
+                    if (
+                        event.target === modal
+                    ) {
+
+                        closePatientModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+
+        /* =================================================
+           FILTER PANEL
+        ================================================= */
+
+        if (filterButton) {
+
+            filterButton.addEventListener(
+                "click",
+                () => {
+
+                    filterPanel.classList.toggle(
+                        "show"
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (closeFilter) {
+
+            closeFilter.addEventListener(
+                "click",
+                () => {
+
+                    filterPanel.classList.remove(
+                        "show"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =================================================
+           SEARCH + FILTER ENGINE
+        ================================================= */
+
+        function filterPatients() {
+
+            const query =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const selectedGender =
+                genderFilter.value;
+
+
+            const selectedStatus =
+                statusFilter.value;
+
+
+            let visibleCount = 0;
+
+
+            patientRows.forEach(row => {
+
+
+                const name =
+                    (
+                        row.dataset.name || ""
+                    ).toLowerCase();
+
+
+                const id =
+                    (
+                        row.dataset.id || ""
+                    ).toLowerCase();
+
+
+                const email =
+                    (
+                        row.dataset.email || ""
+                    ).toLowerCase();
+
+
+                const gender =
+                    row.dataset.gender || "";
+
+
+                const status =
+                    row.dataset.status || "ACTIVE";
+
+
+
+                /* SEARCH */
+
+                const matchesSearch =
+
+                    query === "" ||
+
+                    name.includes(query) ||
+
+                    id.includes(query) ||
+
+                    email.includes(query);
+
+
+
+                /* GENDER */
+
+                const matchesGender =
+
+                    selectedGender === "all" ||
+
+                    gender === selectedGender;
+
+
+
+                /* STATUS */
+
+                const matchesStatus =
+
+                    selectedStatus === "all" ||
+
+                    status === selectedStatus;
+
+
+
+                /* FINAL */
+
+                const visible =
+
+                    matchesSearch &&
+
+                    matchesGender &&
+
+                    matchesStatus;
+
+
+
+                if (visible) {
+
+                    row.style.display = "";
+
+                    visibleCount++;
+
+                } else {
+
+                    row.style.display = "none";
+
+                }
+
+            });
+
+
+
+            /* UPDATE COUNT */
+
+            if (patientCount) {
+
+                patientCount.textContent =
+                    visibleCount;
+
+            }
+
+
+
+            /* FILTER INDICATOR */
+
+            if (
+                selectedGender !== "all" ||
+                selectedStatus !== "all"
+            ) {
+
+                filterActiveDot.classList.add(
+                    "active"
+                );
+
+            } else {
+
+                filterActiveDot.classList.remove(
+                    "active"
+                );
+
+            }
+
+
+
+            /* NO RESULTS */
+
+            updateNoResults(
+                visibleCount
+            );
+
+        }
+
+
+
+        /* =================================================
+           NO RESULTS MESSAGE
+        ================================================= */
+
+        function updateNoResults(
+            visibleCount
+        ) {
+
+            const table =
+                document.getElementById(
+                    "patientTable"
+                );
+
+
+            if (!table) return;
+
+
+            let noResults =
+                document.getElementById(
+                    "noSearchResults"
+                );
+
+
+            if (
+                patientRows.length > 0 &&
+                visibleCount === 0
+            ) {
+
+
+                if (!noResults) {
+
+                    noResults =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    noResults.id =
+                        "noSearchResults";
+
+
+                    noResults.innerHTML = `
+
+                        <td colspan="7">
+
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    ⌕
+                                </div>
+
+                                <h3>
+                                    No matching patients
+                                </h3>
+
+                                <p>
+                                    No patient records match
+                                    your search or filters.
+                                </p>
+
+                                <button
+                                    type="button"
+                                    class="empty-button"
+                                    id="resetSearchButton"
+                                >
+                                    Reset Search
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    `;
+
+
+                    table.appendChild(
+                        noResults
+                    );
+
+
+                    document
+                        .getElementById(
+                            "resetSearchButton"
+                        )
+                        .addEventListener(
+                            "click",
+                            resetAllFilters
+                        );
+
+                }
+
+
+                noResults.style.display = "";
+
+            } else {
+
+                if (noResults) {
+
+                    noResults.style.display =
+                        "none";
+
+                }
+
+            }
+
+        }
+
+
+
+        /* =================================================
+           LIVE SEARCH
+        ================================================= */
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                filterPatients
+            );
+
+        }
+
+
+
+        /* =================================================
+           CLEAR SEARCH
+        ================================================= */
+
+        if (clearSearch) {
+
+            clearSearch.addEventListener(
+                "click",
+                () => {
+
+                    searchInput.value = "";
+
+                    filterPatients();
+
+                    searchInput.focus();
+
+                }
+            );
+
+        }
+
+
+
+        /* =================================================
+           APPLY FILTERS
+        ================================================= */
+
+        if (applyFilters) {
+
+            applyFilters.addEventListener(
+                "click",
+                () => {
+
+                    filterPatients();
+
+                    filterPanel.classList.remove(
+                        "show"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =================================================
+           RESET EVERYTHING
+        ================================================= */
+
+        function resetAllFilters() {
+
+            searchInput.value = "";
+
+            genderFilter.value = "all";
+
+            statusFilter.value = "all";
+
+            filterPatients();
+
+        }
+
+
+        if (clearFilters) {
+
+            clearFilters.addEventListener(
+                "click",
+                resetAllFilters
+            );
+
+        }
+
+
+
+        /* =================================================
+           CTRL + K
+        ================================================= */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+
+                if (
+
+                    (
+                        event.ctrlKey ||
+                        event.metaKey
+                    )
+
+                    &&
+
+                    event.key.toLowerCase() === "k"
+
+                ) {
+
+                    event.preventDefault();
+
+                    searchInput.focus();
+
+                }
+
+
+
+                /* ESC */
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+
+                    if (
+                        filterPanel.classList.contains(
+                            "show"
+                        )
+                    ) {
+
+                        filterPanel.classList.remove(
+                            "show"
+                        );
+
+                    } else {
+
+                        closePatientModal();
+
+                    }
+
+                }
+
+            }
+        );
+
+
+
+        /* =================================================
+           INITIALIZE
+        ================================================= */
+
+        filterPatients();
+
+    </script>
+
+
+</body>
+
+</html>

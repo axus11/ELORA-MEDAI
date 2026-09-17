@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ELORA MEDAI | Clinical Cases</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/cases.css') }}"
+    >
+
+</head>
+
+
+<body class="clinical-page">
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="clinical-sidebar">
+
+    <div class="clinical-brand">
+
+        <div class="clinical-logo">
+            E
+        </div>
+
+        <div>
+            <strong>ELORA</strong>
+            <span>MEDAI</span>
+        </div>
+
+    </div>
+
+
+    <div class="clinical-system">
+
+        <span></span>
+
+        AI SYSTEM ONLINE
+
+    </div>
+
+
+    <nav class="clinical-nav">
+
+        <a href="{{ url_for('dashboard') }}">
+
+            <span>⌂</span>
+
+            Dashboard
+
+        </a>
+
+
+        <a href="{{ url_for('patients') }}">
+
+            <span>♙</span>
+
+            Patients
+
+        </a>
+
+
+        <a
+            href="{{ url_for('clinical_cases') }}"
+            class="active"
+        >
+
+            <span>◈</span>
+
+            Clinical Cases
+
+        </a>
+
+
+        <a href="evidence">
+
+            <span>⌁</span>
+
+            Evidence
+
+        </a>
+
+
+        <div class="clinical-divider"></div>
+
+
+       <a href="{{ url_for('settings') }}" class="nav-item">
+
+            <span>⚙</span>
+
+            Settings
+
+        </a>
+
+    </nav>
+
+
+    <div class="clinical-sidebar-bottom">
+
+        <div class="clinical-user">
+
+            <div class="clinical-avatar">
+
+                {{ doctor_initials }}
+
+            </div>
+
+            <div>
+
+                <strong>
+                    {{ doctor_name }}
+                </strong>
+
+                <small>
+                    Medical Staff
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="logout-link"
+        >
+
+            ↪ Logout
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="clinical-main">
+
+
+    <!-- HEADER -->
+
+    <header class="clinical-header">
+
+        <div>
+
+            <div class="breadcrumb">
+
+                ELORA MEDAI
+
+                <span>/</span>
+
+                Clinical Cases
+
+            </div>
+
+
+            <h1>
+                Clinical Cases
+            </h1>
+
+
+            <p>
+                Create, review and analyze clinical cases.
+            </p>
+
+        </div>
+
+
+        <div class="header-right">
+
+            <div class="secure-status">
+
+                <span></span>
+
+                SECURE SESSION
+
+            </div>
+
+
+            <div class="doctor-header">
+
+                <div class="clinical-avatar">
+
+                    {{ doctor_initials }}
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        {{ doctor_name }}
+                    </strong>
+
+                    <small>
+                        Clinical Staff
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CREATE CASE
+    ===================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    NEW
+                </div>
+
+                <div>
+
+                    <h2>
+                        Create Clinical Case
+                    </h2>
+
+                    <p>
+                        Start a new clinical intelligence workflow.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <span class="section-state">
+                AI READY
+            </span>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('create_case') }}"
+        >
+
+            <div class="patient-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="clinical-field">
+
+                    <label>
+                        PATIENT
+                    </label>
+
+                    <select
+                        name="patient_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select registered patient
+                        </option>
+
+
+                        {% for patient in patients %}
+
+                        <option value="{{ patient.id }}">
+
+                            {{ patient.first_name }}
+                            {{ patient.last_name }}
+
+                            —
+                            {{ patient.patient_id }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- CHIEF COMPLAINT -->
+
+                <div class="clinical-field">
+
+                    <label>
+                        CHIEF COMPLAINT
+                    </label>
+
+                    <input
+                        type="text"
+                        name="chief_complaint"
+                        placeholder="Primary patient complaint"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <div class="clinical-field textarea-field">
+
+                <label>
+                    SYMPTOMS & FINDINGS
+                </label>
+
+                <textarea
+                    name="symptoms"
+                    placeholder="Describe symptoms and relevant clinical findings..."
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <div class="duration-row">
+
+
+                <div class="clinical-field">
+
+                    <label>
+                        ONSET
+                    </label>
+
+                    <input
+                        type="text"
+                        name="onset"
+                        placeholder="e.g. 3 days ago"
+                    >
+
+                </div>
+
+
+                <div class="clinical-field">
+
+                    <label>
+                        SEVERITY
+                    </label>
+
+                    <select name="severity">
+
+                        <option value="">
+                            Not specified
+                        </option>
+
+                        <option value="Mild">
+                            Mild
+                        </option>
+
+                        <option value="Moderate">
+                            Moderate
+                        </option>
+
+                        <option value="Severe">
+                            Severe
+                        </option>
+
+                        <option value="Critical">
+                            Critical
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- VITALS -->
+
+            <div class="vitals-grid">
+
+
+                <div class="vital-card">
+
+                    <span>
+                        BLOOD PRESSURE
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="text"
+                            name="blood_pressure"
+                            placeholder="120/80"
+                        >
+
+                        <small>
+                            mmHg
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="vital-card">
+
+                    <span>
+                        HEART RATE
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="number"
+                            name="heart_rate"
+                            placeholder="72"
+                        >
+
+                        <small>
+                            BPM
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="vital-card">
+
+                    <span>
+                        TEMPERATURE
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="number"
+                            step="0.1"
+                            name="temperature"
+                            placeholder="36.8"
+                        >
+
+                        <small>
+                            °C
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="vital-card">
+
+                    <span>
+                        SpO₂
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="number"
+                            name="spo2"
+                            placeholder="98"
+                        >
+
+                        <small>
+                            %
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="vital-card">
+
+                    <span>
+                        RESPIRATORY RATE
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="number"
+                            name="respiratory_rate"
+                            placeholder="16"
+                        >
+
+                        <small>
+                            /MIN
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="vital-card">
+
+                    <span>
+                        WEIGHT
+                    </span>
+
+                    <div>
+
+                        <input
+                            type="number"
+                            step="0.1"
+                            name="weight"
+                            placeholder="70"
+                        >
+
+                        <small>
+                            KG
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HISTORY -->
+
+            <div class="split-section">
+
+
+                <div class="clinical-section">
+
+                    <div class="clinical-section-header">
+
+                        <div>
+
+                            <div class="section-code">
+                                04
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Medical History
+                                </h2>
+
+                                <p>
+                                    Relevant previous conditions
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        name="medical_history"
+                        class="large-textarea"
+                        placeholder="Previous diagnoses, surgeries, chronic conditions..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="clinical-section">
+
+                    <div class="clinical-section-header">
+
+                        <div>
+
+                            <div class="section-code">
+                                05
+                            </div>
+
+                            <div>
+
+                                <h2>
+                                    Medications & Allergies
+                                </h2>
+
+                                <p>
+                                    Current medications and known allergies
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        name="medications"
+                        class="large-textarea"
+                        placeholder="Current medications, dosage, allergies and reactions..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="clinical-bottom-actions">
+
+                <a
+                    href="{{ url_for('clinical_cases') }}"
+                    class="cancel-button"
+                >
+                    Reset
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="analyze-button large"
+                >
+
+                    ✦
+
+                    Create Clinical Case
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         EXISTING CASES
+    ===================================================== -->
+
+    <section class="clinical-section">
+
+        <div class="clinical-section-header">
+
+            <div>
+
+                <div class="section-code">
+                    CASES
+                </div>
+
+                <div>
+
+                    <h2>
+                        Clinical Case Registry
+                    </h2>
+
+                    <p>
+                        Review previously submitted clinical cases.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <span class="section-state">
+                {{ cases|length }} CASES
+            </span>
+
+        </div>
+
+
+
+        {% if cases %}
+
+        <div class="case-list">
+
+            {% for case in cases %}
+
+            <article class="case-card">
+
+                <div class="case-card-top">
+
+                    <div>
+
+                        <span class="case-label">
+                            CASE
+                        </span>
+
+                        <h3>
+                            {{ case.case_id }}
+                        </h3>
+
+                    </div>
+
+
+                    <div class="case-status">
+
+                        <i></i>
+
+                        {{ case.status }}
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="case-card-body">
+
+                    <div class="case-patient">
+
+                        <span>
+                            PATIENT
+                        </span>
+
+                        <strong>
+                            {{ case.patient.full_name }}
+                        </strong>
+
+                        <small>
+                            {{ case.patient.patient_id }}
+                        </small>
+
+                    </div>
+
+
+                    <div class="case-complaint">
+
+                        <span>
+                            CHIEF COMPLAINT
+                        </span>
+
+                        <strong>
+
+                            {% if case.chief_complaint %}
+
+                                {{ case.chief_complaint }}
+
+                            {% else %}
+
+                                Not provided
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+
+                    <div class="case-date">
+
+                        <span>
+                            CREATED
+                        </span>
+
+                        <strong>
+
+                            {% if case.created_at %}
+
+                                {{ case.created_at.strftime('%d %b %Y') }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CASE ACTIONS
+                ================================================= -->
+
+                <div class="case-card-actions">
+
+                    <a
+                        href="{{ url_for('view_case', case_id=case.id) }}"
+                        class="secondary-action"
+                    >
+                        Open Case
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('view_case', case_id=case.id) }}"
+                        class="analyze-button"
+                    >
+                        ✦ Analyze with ELORA AI
+                    </a>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('delete_case', case_id=case.id) }}"
+                        onsubmit="return confirm('Delete this clinical case?');"
+                    >
+
+                        <button
+                            type="submit"
+                            class="delete-case-button"
+                        >
+                            Delete
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="ai-core">
+                E
+            </div>
+
+            <h3>
+                No Clinical Cases Yet
+            </h3>
+
+            <p>
+                Create your first clinical case above
+                to activate the ELORA clinical intelligence workflow.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ===================================================== -->
+
+    <footer class="clinical-footer">
+
+        <span>
+            ELORA MEDAI v0.1
+        </span>
+
+        <span>
+            Clinical decision-support prototype
+        </span>
+
+        <span>
+            SECURE · AI-ASSISTED · HUMAN VERIFIED
+        </span>
+
+    </footer>
+
+
+</main>
+
+</body>
+</html>
