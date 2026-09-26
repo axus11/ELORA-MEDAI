@@ -5293,7 +5293,396 @@ def view_case(case_id):
 # UPDATE CASE STATUS
 # =========================================================
 
+@app.route("/case/<int:case_id>/medication-support", methods=["POST"])
+def medication_support_api(case_id):
+    if not doctor_logged_in():
+        return jsonify({
+            "success": False,
+            "error": "Authentication required."
+        }), 401
 
+    clinical_case = ClinicalCase.query.get_or_404(case_id)
+
+    if clinical_case.doctor_id != session["doctor_id"]:
+        return jsonify({
+            "success": False,
+            "error": "You are not authorized to access this case."
+        }), 403
+
+    patient = clinical_case.patient
+
+    symptoms = (clinical_case.symptoms or "").lower()
+    complaint = (clinical_case.chief_complaint or "").lower()
+    history = (clinical_case.medical_history or "").lower()
+    current_meds = (clinical_case.medications or "").lower()
+
+    combined = " ".join([
+        symptoms,
+        complaint,
+        history
+    ])
+
+    considerations = []
+    safety_checks = []
+    warnings = []
+    missing_information = []
+
+    # ---------------------------------------------------------
+    # BASIC PATIENT SAFETY DATA
+    # ---------------------------------------------------------
+
+    if not clinical_case.weight:
+        missing_information.append(
+            "Patient weight is not documented."
+        )
+
+    if not patient.date_of_birth:
+        missing_information.append(
+            "Patient date of birth/age is not documented."
+        )
+
+    if not clinical_case.medications:
+        missing_information.append(
+            "Current medications and allergy history should be verified."
+        )
+
+    if not clinical_case.medical_history:
+        missing_information.append(
+            "Relevant medical history is not documented."
+        )
+
+    # ---------------------------------------------------------
+    # ALLERGY WARNING
+    # ---------------------------------------------------------
+
+    allergy_terms = [
+        "allergy",
+        "allergic",
+        "penicillin allergy",
+        "drug allergy"
+    ]
+
+    if any(term in current_meds or term in history for term in allergy_terms):
+        warnings.append({
+            "level": "HIGH",
+            "title": "Reported allergy information detected",
+            "detail": (
+                "Verify the exact allergen, reaction type, severity, "
+                "and timing before considering medication therapy."
+            )
+        })
+    else:
+        safety_checks.append({
+            "status": "VERIFY",
+            "title": "Medication allergies",
+            "detail": "Confirm allergies and previous adverse drug reactions."
+        })
+
+    # ---------------------------------------------------------
+    # CURRENT MEDICATION CHECK
+    # ---------------------------------------------------------
+
+    if clinical_case.medications:
+        safety_checks.append({
+            "status": "REVIEW",
+            "title": "Current medications",
+            "detail": (
+                "Review the complete medication list for duplication, "
+                "interactions, contraindications, and adherence."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # FEVER / PAIN
+    # ---------------------------------------------------------
+
+    fever_or_pain_terms = [
+        "fever",
+        "pain",
+        "headache",
+        "body ache",
+        "aches",
+        "myalgia"
+    ]
+
+    if any(term in combined for term in fever_or_pain_terms):
+        considerations.append({
+            "category": "Symptom management",
+            "medication": "Analgesic / antipyretic therapy",
+            "reason": (
+                "Consider symptom-directed treatment when clinically "
+                "appropriate after reviewing contraindications and "
+                "patient-specific factors."
+            ),
+            "verification": (
+                "Verify age, weight, allergies, liver function, "
+                "current medications, and maximum daily exposure."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # RESPIRATORY SYMPTOMS
+    # ---------------------------------------------------------
+
+    respiratory_terms = [
+        "cough",
+        "wheezing",
+        "shortness of breath",
+        "breathing difficulty",
+        "dyspnea"
+    ]
+
+    if any(term in combined for term in respiratory_terms):
+        considerations.append({
+            "category": "Respiratory symptoms",
+            "medication": "Respiratory symptom-directed therapy",
+            "reason": (
+                "Respiratory symptoms may require targeted therapy "
+                "depending on the underlying clinical cause."
+            ),
+            "verification": (
+                "Confirm respiratory diagnosis, oxygen saturation, "
+                "respiratory rate, auscultation findings, and severity "
+                "before selecting therapy."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # GI SYMPTOMS
+    # ---------------------------------------------------------
+
+    gi_terms = [
+        "nausea",
+        "vomiting",
+        "diarrhea",
+        "stomach pain",
+        "abdominal pain"
+    ]
+
+    if any(term in combined for term in gi_terms):
+        considerations.append({
+            "category": "Gastrointestinal symptoms",
+            "medication": "GI symptom-directed therapy",
+            "reason": (
+                "Supportive or targeted gastrointestinal therapy may "
+                "be considered depending on the underlying cause."
+            ),
+            "verification": (
+                "Assess hydration status, duration, severity, blood in "
+                "stool/vomit, pregnancy status where relevant, and "
+                "potential infectious or surgical causes."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # INFECTION SIGNAL
+    # ---------------------------------------------------------
+
+    infection_terms = [
+        "infection",
+        "infected",
+        "pus",
+        "pneumonia",
+        "urinary infection",
+        "uti",
+        "bacterial"
+    ]
+
+    if any(term in combined for term in infection_terms):
+        considerations.append({
+            "category": "Possible infection",
+            "medication": "Antimicrobial therapy — diagnosis dependent",
+            "reason": (
+                "Antimicrobial treatment should only be considered "
+                "when a bacterial or other treatable infection is "
+                "clinically established or sufficiently suspected."
+            ),
+            "verification": (
+                "Confirm suspected source, severity, allergy history, "
+                "local antimicrobial guidance, relevant cultures/tests, "
+                "and renal/hepatic considerations."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # BLOOD PRESSURE
+    # ---------------------------------------------------------
+
+    bp = (clinical_case.blood_pressure or "").strip()
+
+    if bp:
+        try:
+            systolic = int(
+                bp.split("/")[0].strip()
+            )
+
+            diastolic = int(
+                bp.split("/")[1].strip()
+            )
+
+            if systolic >= 180 or diastolic >= 120:
+                warnings.append({
+                    "level": "HIGH",
+                    "title": "Severely elevated blood pressure",
+                    "detail": (
+                        "Repeat and clinically assess the measurement. "
+                        "Evaluate urgently for symptoms or signs of "
+                        "acute target-organ involvement."
+                    )
+                })
+
+            elif systolic >= 140 or diastolic >= 90:
+                safety_checks.append({
+                    "status": "REVIEW",
+                    "title": "Elevated blood pressure",
+                    "detail": (
+                        "Confirm the measurement and assess the patient's "
+                        "overall cardiovascular risk and existing therapy."
+                    )
+                })
+
+        except (ValueError, IndexError):
+            safety_checks.append({
+                "status": "VERIFY",
+                "title": "Blood pressure format",
+                "detail": "Verify that blood pressure is recorded as systolic/diastolic."
+            })
+
+    # ---------------------------------------------------------
+    # SPO2
+    # ---------------------------------------------------------
+
+    spo2 = (clinical_case.spo2 or "").strip()
+
+    if spo2:
+        try:
+            spo2_value = float(spo2)
+
+            if spo2_value < 90:
+                warnings.append({
+                    "level": "HIGH",
+                    "title": "Low oxygen saturation",
+                    "detail": (
+                        "Low SpO₂ requires prompt clinical assessment. "
+                        "Medication selection should not delay evaluation "
+                        "of potentially serious respiratory disease."
+                    )
+                })
+
+            elif spo2_value < 94:
+                safety_checks.append({
+                    "status": "REVIEW",
+                    "title": "Reduced oxygen saturation",
+                    "detail": (
+                        "Reassess oxygen saturation and correlate with "
+                        "respiratory symptoms and clinical findings."
+                    )
+                })
+
+        except ValueError:
+            safety_checks.append({
+                "status": "VERIFY",
+                "title": "SpO₂ value",
+                "detail": "Verify the recorded oxygen saturation."
+            })
+
+    # ---------------------------------------------------------
+    # TEMPERATURE
+    # ---------------------------------------------------------
+
+    temperature = (clinical_case.temperature or "").strip()
+
+    if temperature:
+        try:
+            temp_value = float(temperature)
+
+            if temp_value >= 39.0:
+                safety_checks.append({
+                    "status": "REVIEW",
+                    "title": "Significant fever",
+                    "detail": (
+                        "Evaluate the source and duration of fever and "
+                        "assess for systemic infection or other causes."
+                    )
+                })
+
+        except ValueError:
+            pass
+
+    # ---------------------------------------------------------
+    # GENERAL SAFETY
+    # ---------------------------------------------------------
+
+    safety_checks.extend([
+        {
+            "status": "VERIFY",
+            "title": "Drug interactions",
+            "detail": (
+                "Check proposed therapy against the patient's complete "
+                "medication and supplement list."
+            )
+        },
+        {
+            "status": "VERIFY",
+            "title": "Contraindications",
+            "detail": (
+                "Review renal function, hepatic function, pregnancy status "
+                "where relevant, age, allergies, and relevant comorbidities."
+            )
+        }
+    ])
+
+    # ---------------------------------------------------------
+    # FALLBACK
+    # ---------------------------------------------------------
+
+    if not considerations:
+        considerations.append({
+            "category": "No specific medication pathway",
+            "medication": "No medication recommendation generated",
+            "reason": (
+                "The documented case information does not provide enough "
+                "specific evidence for a medication consideration."
+            ),
+            "verification": (
+                "Clinical diagnosis and complete patient history should "
+                "be established before selecting medication therapy."
+            )
+        })
+
+    # ---------------------------------------------------------
+    # OVERALL STATUS
+    # ---------------------------------------------------------
+
+    if any(
+        warning["level"] == "HIGH"
+        for warning in warnings
+    ):
+        status = "HIGH ATTENTION"
+    elif missing_information:
+        status = "REVIEW REQUIRED"
+    else:
+        status = "CLINICIAN REVIEW"
+
+    return jsonify({
+        "success": True,
+        "support": {
+            "status": status,
+            "engine": "ELORA MEDAI Medication Support v1.0",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "considerations": considerations,
+            "safety_checks": safety_checks,
+            "warnings": warnings,
+            "missing_information": missing_information,
+            "disclaimer": (
+                "Medication Support is clinical decision support only. "
+                "It does not prescribe medication or replace professional "
+                "clinical judgment. A qualified clinician must verify the "
+                "diagnosis, medication choice, contraindications, allergies, "
+                "interactions, and patient-specific factors before treatment."
+            )
+        }
+    })
 @app.route(
     "/case/<int:case_id>/status",
     methods=["POST"]

@@ -3629,130 +3629,269 @@
     </section>
 
 
+```javascript
+/* =====================================================
+   MEDICATION SUPPORT
+===================================================== */
 
-    <!-- =====================================================
-         STATUS
-    ====================================================== -->
-
-    <section class="clinical-section">
-
-        <div class="clinical-section-header">
-
-            <div>
-
-                <div class="section-code">
-                    06
-                </div>
-
-                <div>
-
-                    <h2>
-                        Case Status
-                    </h2>
-
-                    <p>
-                        Update the workflow state of this case.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
+const runMedicationButton = document.getElementById("runMedicationButton");
+const rerunMedicationButton = document.getElementById("rerunMedicationButton");
+const medicationReady = document.getElementById("medicationReady");
+const medicationProcessing = document.getElementById("medicationProcessing");
+const medicationResults = document.getElementById("medicationResults");
+const medicationStatus = document.getElementById("medicationStatus");
+const medicationEngine = document.getElementById("medicationEngine");
+const medicationWarnings = document.getElementById("medicationWarnings");
+const medicationConsiderations = document.getElementById("medicationConsiderations");
+const medicationSafety = document.getElementById("medicationSafety");
+const medicationMissing = document.getElementById("medicationMissing");
+const medicationDisclaimer = document.getElementById("medicationDisclaimer");
 
 
-        <div class="status-panel">
+function renderMedicationWarnings(warnings) {
+    medicationWarnings.innerHTML = "";
 
-            <form
-                method="POST"
-                action="{{ url_for('update_case_status', case_id=case.id) }}"
-                id="statusForm"
-            >
+    if (!Array.isArray(warnings) || !warnings.length) {
+        return;
+    }
 
-                <div class="status-form">
+    warnings.forEach(function (warning) {
+        const box = document.createElement("div");
+        box.className = "medication-warning";
 
-                    <div class="clinical-field">
+        const title = document.createElement("strong");
+        title.textContent =
+            (warning.level || "WARNING") +
+            " · " +
+            (warning.title || "Clinical warning");
 
-                        <label>
-                            CASE STATUS
-                        </label>
+        const detail = document.createElement("div");
+        detail.textContent = warning.detail || "";
 
-                        <select name="status">
-
-                            <option
-                                value="New"
-                                {% if case.status == "New" %}selected{% endif %}
-                            >
-                                New
-                            </option>
-
-                            <option
-                                value="Active"
-                                {% if case.status == "Active" %}selected{% endif %}
-                            >
-                                Active
-                            </option>
-
-                            <option
-                                value="Completed"
-                                {% if case.status == "Completed" %}selected{% endif %}
-                            >
-                                Completed
-                            </option>
-
-                            <option
-                                value="Archived"
-                                {% if case.status == "Archived" %}selected{% endif %}
-                            >
-                                Archived
-                            </option>
-
-                        </select>
-
-                    </div>
+        box.appendChild(title);
+        box.appendChild(detail);
+        medicationWarnings.appendChild(box);
+    });
+}
 
 
-                    <button
-                        type="submit"
-                        class="secondary-action"
-                    >
-                        Update Status
-                    </button>
+function renderMedicationConsiderations(considerations) {
+    medicationConsiderations.innerHTML = "";
 
-                </div>
+    if (!Array.isArray(considerations) || !considerations.length) {
+        medicationConsiderations.textContent =
+            "No medication considerations generated.";
+        return;
+    }
 
-            </form>
+    considerations.forEach(function (item) {
+        const box = document.createElement("div");
+        box.className = "medication-item";
 
-        </div>
+        const header = document.createElement("div");
+        header.className = "medication-item-header";
 
-    </section>
+        const name = document.createElement("strong");
+        name.textContent =
+            item.medication || "Medication consideration";
+
+        const category = document.createElement("span");
+        category.className = "medication-category";
+        category.textContent = item.category || "CLINICAL";
+
+        header.appendChild(name);
+        header.appendChild(category);
+
+        const reason = document.createElement("p");
+        reason.textContent = item.reason || "";
+
+        const verification = document.createElement("div");
+        verification.className = "medication-verification";
+        verification.textContent =
+            "VERIFY · " +
+            (item.verification || "Clinician review required.");
+
+        box.appendChild(header);
+        box.appendChild(reason);
+        box.appendChild(verification);
+
+        medicationConsiderations.appendChild(box);
+    });
+}
 
 
+function renderMedicationSafety(checks) {
+    medicationSafety.innerHTML = "";
 
-    <!-- =====================================================
-         DELETE
-    ====================================================== -->
+    if (!Array.isArray(checks) || !checks.length) {
+        medicationSafety.textContent =
+            "No safety checks returned.";
+        return;
+    }
 
-    <section class="clinical-bottom-actions">
+    checks.forEach(function (check) {
+        const box = document.createElement("div");
+        box.className = "medication-check";
 
-        <a
-            href="{{ url_for('clinical_cases') }}"
-            class="cancel-button"
-        >
-            ← Back to Cases
-        </a>
+        const title = document.createElement("strong");
+        title.textContent =
+            (check.status || "VERIFY") +
+            " · " +
+            (check.title || "Safety check");
+
+        const detail = document.createElement("div");
+        detail.textContent = check.detail || "";
+
+        box.appendChild(title);
+        box.appendChild(detail);
+
+        medicationSafety.appendChild(box);
+    });
+}
 
 
-        <button
-            type="button"
-            class="delete-case-button"
-            id="openDeleteModal"
-        >
-            Delete Case
-        </button>
+function renderMedicationMissing(missing) {
+    medicationMissing.innerHTML = "";
 
-    </section>
+    if (!Array.isArray(missing) || !missing.length) {
+        const div = document.createElement("div");
+        div.className = "medication-missing";
+        div.textContent =
+            "No major missing information was identified.";
 
+        medicationMissing.appendChild(div);
+        return;
+    }
+
+    missing.forEach(function (item) {
+        const div = document.createElement("div");
+        div.className = "medication-missing";
+        div.textContent = "• " + item;
+
+        medicationMissing.appendChild(div);
+    });
+}
+
+
+function renderMedicationSupport(support) {
+    medicationStatus.textContent =
+        support.status || "CLINICIAN REVIEW";
+
+    medicationEngine.textContent =
+        support.engine || "ELORA MEDAI";
+
+    renderMedicationWarnings(support.warnings);
+    renderMedicationConsiderations(support.considerations);
+    renderMedicationSafety(support.safety_checks);
+    renderMedicationMissing(support.missing_information);
+
+    medicationDisclaimer.textContent =
+        support.disclaimer ||
+        "Medication Support is clinical decision support only.";
+}
+
+
+async function runMedicationSupport() {
+
+    if (!runMedicationButton) {
+        return;
+    }
+
+    runMedicationButton.disabled = true;
+
+    if (rerunMedicationButton) {
+        rerunMedicationButton.disabled = true;
+    }
+
+    medicationReady.style.display = "none";
+    medicationResults.style.display = "none";
+    medicationProcessing.classList.add("active");
+
+    try {
+
+        const response = await fetch(
+            "{{ url_for('medication_support_api', case_id=case.id) }}",
+            {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        );
+
+        let data = null;
+
+        try {
+            data = await response.json();
+        } catch (jsonError) {
+            throw new Error(
+                "The ELORA server returned an invalid response."
+            );
+        }
+
+        if (!response.ok || !data.success) {
+            throw new Error(
+                data.error || "Medication support failed."
+            );
+        }
+
+        renderMedicationSupport(data.support);
+
+        medicationProcessing.classList.remove("active");
+        medicationResults.style.display = "block";
+
+        runMedicationButton.textContent =
+            "✓ Medication Support Complete";
+
+        if (typeof showToast === "function") {
+            showToast(
+                "ELORA medication support generated.",
+                "success"
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "MEDICATION SUPPORT ERROR:",
+            error
+        );
+
+        medicationProcessing.classList.remove("active");
+        medicationReady.style.display = "block";
+
+        if (typeof showToast === "function") {
+            showToast(
+                error.message || "Medication support failed.",
+                "error"
+            );
+        }
+    }
+
+    runMedicationButton.disabled = false;
+
+    if (rerunMedicationButton) {
+        rerunMedicationButton.disabled = false;
+    }
+}
+
+
+/* BUTTON EVENTS */
+
+if (runMedicationButton) {
+    runMedicationButton.addEventListener(
+        "click",
+        runMedicationSupport
+    );
+}
+
+if (rerunMedicationButton) {
+    rerunMedicationButton.addEventListener(
+        "click",
+        runMedicationSupport
+    );
+}
 
 
     <!-- =====================================================
@@ -5453,6 +5592,552 @@ document.addEventListener(
 
 );
 
+/* =====================================================
+   MEDICATION SUPPORT
+===================================================== */
+
+const runMedicationButton =
+    document.getElementById(
+        "runMedicationButton"
+    );
+
+const rerunMedicationButton =
+    document.getElementById(
+        "rerunMedicationButton"
+    );
+
+const medicationReady =
+    document.getElementById(
+        "medicationReady"
+    );
+
+const medicationProcessing =
+    document.getElementById(
+        "medicationProcessing"
+    );
+
+const medicationResults =
+    document.getElementById(
+        "medicationResults"
+    );
+
+const medicationStatus =
+    document.getElementById(
+        "medicationStatus"
+    );
+
+const medicationEngine =
+    document.getElementById(
+        "medicationEngine"
+    );
+
+const medicationWarnings =
+    document.getElementById(
+        "medicationWarnings"
+    );
+
+const medicationConsiderations =
+    document.getElementById(
+        "medicationConsiderations"
+    );
+
+const medicationSafety =
+    document.getElementById(
+        "medicationSafety"
+    );
+
+const medicationMissing =
+    document.getElementById(
+        "medicationMissing"
+    );
+
+const medicationDisclaimer =
+    document.getElementById(
+        "medicationDisclaimer"
+    );
+
+
+function renderMedicationWarnings(
+    warnings
+) {
+
+    medicationWarnings.innerHTML = "";
+
+    if (
+        !Array.isArray(warnings) ||
+        !warnings.length
+    ) {
+        return;
+    }
+
+    warnings.forEach(
+        function (warning) {
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+            box.className =
+                "medication-warning";
+
+            const title =
+                document.createElement(
+                    "strong"
+                );
+
+            title.textContent =
+                (
+                    warning.level ||
+                    "WARNING"
+                ) +
+                " · " +
+                (
+                    warning.title ||
+                    "Clinical warning"
+                );
+
+            const detail =
+                document.createElement(
+                    "div"
+                );
+
+            detail.textContent =
+                warning.detail ||
+                "";
+
+            box.appendChild(title);
+            box.appendChild(detail);
+
+            medicationWarnings.appendChild(
+                box
+            );
+
+        }
+    );
+
+}
+
+
+function renderMedicationConsiderations(
+    considerations
+) {
+
+    medicationConsiderations.innerHTML =
+        "";
+
+    if (
+        !Array.isArray(
+            considerations
+        ) ||
+        !considerations.length
+    ) {
+
+        medicationConsiderations.textContent =
+            "No medication considerations generated.";
+
+        return;
+
+    }
+
+    considerations.forEach(
+        function (item) {
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+            box.className =
+                "medication-item";
+
+
+            const header =
+                document.createElement(
+                    "div"
+                );
+
+            header.className =
+                "medication-item-header";
+
+
+            const name =
+                document.createElement(
+                    "strong"
+                );
+
+            name.textContent =
+                item.medication ||
+                "Medication consideration";
+
+
+            const category =
+                document.createElement(
+                    "span"
+                );
+
+            category.className =
+                "medication-category";
+
+            category.textContent =
+                item.category ||
+                "CLINICAL";
+
+
+            header.appendChild(name);
+            header.appendChild(category);
+
+
+            const reason =
+                document.createElement(
+                    "p"
+                );
+
+            reason.textContent =
+                item.reason ||
+                "";
+
+
+            const verification =
+                document.createElement(
+                    "div"
+                );
+
+            verification.className =
+                "medication-verification";
+
+            verification.textContent =
+                "VERIFY · " +
+                (
+                    item.verification ||
+                    "Clinician review required."
+                );
+
+
+            box.appendChild(header);
+            box.appendChild(reason);
+            box.appendChild(verification);
+
+            medicationConsiderations.appendChild(
+                box
+            );
+
+        }
+    );
+
+}
+
+
+function renderMedicationSafety(
+    checks
+) {
+
+    medicationSafety.innerHTML = "";
+
+    if (
+        !Array.isArray(checks) ||
+        !checks.length
+    ) {
+
+        medicationSafety.textContent =
+            "No safety checks returned.";
+
+        return;
+
+    }
+
+    checks.forEach(
+        function (check) {
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+            box.className =
+                "medication-check";
+
+
+            const title =
+                document.createElement(
+                    "strong"
+                );
+
+            title.textContent =
+                (
+                    check.status ||
+                    "VERIFY"
+                ) +
+                " · " +
+                (
+                    check.title ||
+                    "Safety check"
+                );
+
+
+            const detail =
+                document.createElement(
+                    "div"
+                );
+
+            detail.textContent =
+                check.detail ||
+                "";
+
+
+            box.appendChild(title);
+            box.appendChild(detail);
+
+            medicationSafety.appendChild(
+                box
+            );
+
+        }
+    );
+
+}
+
+
+function renderMedicationMissing(
+    missing
+) {
+
+    medicationMissing.innerHTML = "";
+
+    if (
+        !Array.isArray(missing) ||
+        !missing.length
+    ) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.className =
+            "medication-missing";
+
+        div.textContent =
+            "No major missing information was identified.";
+
+        medicationMissing.appendChild(
+            div
+        );
+
+        return;
+
+    }
+
+    missing.forEach(
+        function (item) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "medication-missing";
+
+            div.textContent =
+                "• " + item;
+
+            medicationMissing.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+function renderMedicationSupport(
+    support
+) {
+
+    medicationStatus.textContent =
+        support.status ||
+        "CLINICIAN REVIEW";
+
+    medicationEngine.textContent =
+        support.engine ||
+        "ELORA MEDAI";
+
+    renderMedicationWarnings(
+        support.warnings
+    );
+
+    renderMedicationConsiderations(
+        support.considerations
+    );
+
+    renderMedicationSafety(
+        support.safety_checks
+    );
+
+    renderMedicationMissing(
+        support.missing_information
+    );
+
+    medicationDisclaimer.textContent =
+        support.disclaimer ||
+        "Medication Support is clinical decision support only.";
+
+}
+
+
+async function runMedicationSupport() {
+
+    runMedicationButton.disabled =
+        true;
+
+    if (rerunMedicationButton) {
+        rerunMedicationButton.disabled =
+            true;
+    }
+
+    medicationReady.style.display =
+        "none";
+
+    medicationResults.style.display =
+        "none";
+
+    medicationProcessing.classList.add(
+        "active"
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ url_for('medication_support_api', case_id=case.id) }}",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Accept":
+                            "application/json",
+
+                        "X-Requested-With":
+                            "XMLHttpRequest"
+                    }
+                }
+            );
+
+
+        let data = null;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch (
+            jsonError
+        ) {
+
+            throw new Error(
+                "The ELORA server returned an invalid response."
+            );
+
+        }
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.error ||
+                "Medication support failed."
+            );
+
+        }
+
+
+        renderMedicationSupport(
+            data.support
+        );
+
+
+        medicationProcessing.classList.remove(
+            "active"
+        );
+
+        medicationResults.style.display =
+            "block";
+
+
+        runMedicationButton.textContent =
+            "✓ Medication Support Complete";
+
+
+        showToast(
+            "ELORA medication support generated.",
+            "success"
+        );
+
+
+        document
+            .getElementById(
+                "medicationPanel"
+            )
+            .scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            "MEDICATION SUPPORT ERROR:",
+            error
+        );
+
+        medicationProcessing.classList.remove(
+            "active"
+        );
+
+        medicationReady.style.display =
+            "block";
+
+        showToast(
+            error.message ||
+            "Medication support failed.",
+            "error"
+        );
+
+    }
+
+
+    runMedicationButton.disabled =
+        false;
+
+    if (rerunMedicationButton) {
+        rerunMedicationButton.disabled =
+            false;
+    }
+
+}
+
+
+runMedicationButton.addEventListener(
+    "click",
+    runMedicationSupport
+);
+
+
+rerunMedicationButton.addEventListener(
+    "click",
+    runMedicationSupport
+);
 </script>
 
 
